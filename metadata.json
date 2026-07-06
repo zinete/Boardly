@@ -1,0 +1,6 @@
+{
+  "name": "Todo List Board with Smart Labels",
+  "description": "A fully featured Kanban-style task board with custom labels, rule-based smart labels, task relationships/linking, drag-and-drop sorting, and IndexedDB local persistence.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
