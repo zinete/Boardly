@@ -4,6 +4,34 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Google AI Studio App</title>
+    <script>
+      // Prevent FOUC: apply saved theme class + CSS variables before React mounts
+      ;(function() {
+        var KEY = 'boardly-theme';
+        var DARK_THEMES = ['dark', 'nord', 'dracula'];
+        // Minimal CSS variable map per theme (background & foreground only)
+        var THEME_VARS = {
+          light:     { background: 'oklch(1 0 0)',           foreground: 'oklch(0.145 0 0)' },
+          dark:      { background: 'oklch(0.145 0 0)',       foreground: 'oklch(0.985 0 0)' },
+          nord:      { background: 'oklch(0.22 0.03 260)',   foreground: 'oklch(0.93 0.01 260)' },
+          dracula:   { background: 'oklch(0.22 0.04 290)',   foreground: 'oklch(0.95 0.01 290)' }
+        };
+        var saved = null;
+        try { saved = localStorage.getItem(KEY); } catch(e) {}
+        var prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (DARK_THEMES.indexOf(saved) !== -1 || (!saved && prefersDark)) {
+          document.documentElement.classList.add('dark');
+        }
+        // Pre-apply theme CSS variables to prevent color flash
+        var themeId = saved || 'light';
+        var vars = THEME_VARS[themeId];
+        if (vars) {
+          var style = document.documentElement.style;
+          style.setProperty('--background', vars.background);
+          style.setProperty('--foreground', vars.foreground);
+        }
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

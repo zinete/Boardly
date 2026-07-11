@@ -8,11 +8,9 @@ import { Badge } from '@/components/ui/badge';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import {
   Calendar,
-  Tag,
   AlertCircle,
   Sparkles,
   Loader2,
-  Check,
   X,
   Bold,
   Italic,
@@ -25,7 +23,7 @@ import {
   Eye,
   Edit3,
   Trash2,
-  FileText
+  Check
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { renderMarkdownToHtml, insertMarkdown } from '../lib/richText';
@@ -47,7 +45,7 @@ export function NewTaskModal({ isOpen, onClose, defaultStatus }: NewTaskModalPro
   const [priority, setPriority] = useState<TaskPriority>('low');
   const [dueDate, setDueDate] = useState('');
   const [selectedLabelIds, setSelectedLabelIds] = useState<string[]>([]);
-  
+
   // Images (local base64 or URL hosting)
   const [images, setImages] = useState<string[]>([]);
   const [imageUrlInput, setImageUrlInput] = useState('');
@@ -86,8 +84,7 @@ export function NewTaskModal({ isOpen, onClose, defaultStatus }: NewTaskModalPro
     }
   };
 
-  const handleCreate = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleCreate = async () => {
     if (!title.trim()) return;
 
     await addTask({
@@ -128,7 +125,6 @@ export function NewTaskModal({ isOpen, onClose, defaultStatus }: NewTaskModalPro
         reader.readAsDataURL(file);
       }
     }
-    // reset input
     e.target.value = '';
   };
 
@@ -197,16 +193,29 @@ export function NewTaskModal({ isOpen, onClose, defaultStatus }: NewTaskModalPro
   };
 
   const labelColorMap: Record<string, string> = {
-    blue: 'bg-blue-500/10 text-blue-600 border-blue-500/20',
-    emerald: 'bg-emerald-500/10 text-emerald-600 border-emerald-500/20',
-    green: 'bg-green-500/10 text-green-600 border-green-500/20',
-    amber: 'bg-amber-500/10 text-amber-600 border-amber-500/20',
-    red: 'bg-red-500/10 text-red-600 border-red-500/20',
-    rose: 'bg-rose-500/10 text-rose-600 border-rose-500/20',
-    purple: 'bg-purple-500/10 text-purple-600 border-purple-500/20',
-    indigo: 'bg-indigo-500/10 text-indigo-600 border-indigo-500/20',
-    pink: 'bg-pink-500/10 text-pink-600 border-pink-500/20',
-    gray: 'bg-slate-500/10 text-slate-600 border-slate-500/20',
+    blue: 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border-transparent dark:border-transparent',
+    emerald: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-transparent dark:border-transparent',
+    green: 'bg-green-500/15 text-green-600 dark:text-green-400 border-transparent dark:border-transparent',
+    amber: 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-transparent dark:border-transparent',
+    red: 'bg-red-500/15 text-red-600 dark:text-red-400 border-transparent dark:border-transparent',
+    rose: 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-transparent dark:border-transparent',
+    purple: 'bg-purple-500/15 text-purple-600 dark:text-purple-400 border-transparent dark:border-transparent',
+    indigo: 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border-transparent dark:border-transparent',
+    pink: 'bg-pink-500/15 text-pink-600 dark:text-pink-400 border-transparent dark:border-transparent',
+    gray: 'bg-slate-500/15 text-slate-600 dark:text-slate-400 border-transparent dark:border-transparent',
+  };
+
+  const labelIndicatorColorMap: Record<string, string> = {
+    blue: 'bg-blue-500 border-blue-500',
+    emerald: 'bg-emerald-500 border-emerald-500',
+    green: 'bg-green-500 border-green-500',
+    amber: 'bg-amber-500 border-amber-500',
+    red: 'bg-red-500 border-red-500',
+    rose: 'bg-rose-500 border-rose-500',
+    purple: 'bg-purple-500 border-purple-500',
+    indigo: 'bg-indigo-500 border-indigo-500',
+    pink: 'bg-pink-500 border-pink-500',
+    gray: 'bg-slate-500 border-slate-500',
   };
 
   return (
@@ -228,24 +237,24 @@ export function NewTaskModal({ isOpen, onClose, defaultStatus }: NewTaskModalPro
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 28, stiffness: 220 }}
-            className="fixed top-0 right-0 bottom-0 z-50 w-full sm:max-w-md md:max-w-lg lg:max-w-xl h-full bg-white dark:bg-zinc-900 shadow-2xl border-l border-zinc-200 dark:border-zinc-800 flex flex-col overflow-hidden"
+            className="fixed top-0 right-0 bottom-0 z-50 w-full sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl h-full bg-popover/95 shadow-2xl border-l border-border dark:border-border/60 flex flex-col overflow-hidden"
           >
             {/* Header */}
-            <div className="h-16 px-6 border-b border-zinc-150 dark:border-zinc-800 flex items-center justify-between bg-zinc-50/50 dark:bg-zinc-900/50 shrink-0">
+            <div className="h-16 px-6 border-b border-border dark:border-border/60 flex items-center justify-between bg-popover/95 shrink-0">
               <div className="flex items-center gap-2">
                 <div className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400">
                   <Sparkles className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">新建任务</h3>
-                  <p className="text-[10px] text-zinc-450 dark:text-zinc-500">创建并配置研发看板工作流任务</p>
+                  <h3 className="text-sm font-semibold text-foreground">新建任务</h3>
+                  <p className="text-[10px] text-muted-foreground">创建并配置研发看板工作流任务</p>
                 </div>
               </div>
               <Button
                 variant="ghost"
                 size="icon"
                 onClick={onClose}
-                className="h-8 w-8 rounded-lg text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200"
+                className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground"
               >
                 <X className="w-4 h-4" />
               </Button>
@@ -253,13 +262,13 @@ export function NewTaskModal({ isOpen, onClose, defaultStatus }: NewTaskModalPro
 
             {/* Content Scroll Area */}
             <div className="flex-1 overflow-y-auto p-6 space-y-5">
-              {/* AI Quick Draft Assist Banner */}
-              <div className="border border-indigo-100 dark:border-indigo-900/40 bg-indigo-50/20 dark:bg-indigo-950/10 rounded-xl p-4 space-y-2">
+              {/* AI Quick Draft Assist Banner — full width, unique to NewTaskModal */}
+              <div className="border border-indigo-100 dark:border-indigo-900/50 bg-indigo-50/20 dark:bg-indigo-950/10 rounded-xl p-4 space-y-2">
                 <div className="flex items-center gap-1.5 text-xs font-semibold text-indigo-700 dark:text-indigo-400 uppercase tracking-wider">
                   <Sparkles className="w-4 h-4 text-indigo-500 animate-pulse" />
                   AI 智能快捷起草
                 </div>
-                <p className="text-[11px] text-zinc-500 dark:text-zinc-400 leading-relaxed">
+                <p className="text-[11px] text-muted-foreground leading-relaxed">
                   口语化描述（如: "下周一前完成数据库重构，标为高优，打上技术标签"），AI 将自动解析标题、描述和元数据。
                 </p>
                 <div className="flex gap-2 mt-1">
@@ -267,14 +276,14 @@ export function NewTaskModal({ isOpen, onClose, defaultStatus }: NewTaskModalPro
                     value={draftText}
                     onChange={(e) => setDraftText(e.target.value)}
                     placeholder="在这里输入您的一句话任务描述..."
-                    className="text-xs h-8.5 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-800 rounded-lg flex-1 focus-visible:ring-1"
+                    className="text-xs h-8.5 bg-card border-input rounded-lg flex-1 focus-visible:ring-1"
                     onKeyDown={(e) => e.key === 'Enter' && handleAiParseDraft()}
                   />
                   <Button
                     onClick={handleAiParseDraft}
                     disabled={aiLoading || !draftText.trim()}
                     size="sm"
-                    className="bg-indigo-600 hover:bg-indigo-700 dark:bg-indigo-500 dark:hover:bg-indigo-600 text-white shrink-0 h-8.5 text-xs rounded-lg gap-1 font-medium"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white shrink-0 h-8.5 text-xs rounded-lg gap-1 font-medium"
                   >
                     {aiLoading ? (
                       <>
@@ -294,260 +303,263 @@ export function NewTaskModal({ isOpen, onClose, defaultStatus }: NewTaskModalPro
                 )}
               </div>
 
-              {/* Regular Creation Form */}
-              <form onSubmit={handleCreate} className="space-y-4 pt-2">
-                {/* Title */}
-                <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">任务标题</label>
-                  <Input
-                    placeholder="例如: 编写高并发性能测试用例..."
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    required
-                    className="h-10 text-sm bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-850 rounded-lg focus-visible:ring-1"
-                  />
-                </div>
+              {/* Two-Column Layout: content left, metadata sidebar right */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-                {/* Description with Formatting & Preview Tab */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <label className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider">任务描述 (富文本)</label>
-                    
-                    <div className="flex items-center gap-1 bg-zinc-100 dark:bg-zinc-800 p-0.5 rounded-lg">
-                      <button
-                        type="button"
-                        onClick={() => setDescriptionTab('edit')}
-                        className={`px-2 py-1 text-[10px] font-medium rounded-md flex items-center gap-1 transition-all ${
-                          descriptionTab === 'edit'
-                            ? 'bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-250 shadow-xs'
-                            : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800'
-                        }`}
-                      >
-                        <Edit3 className="w-3 h-3" />
-                        编辑
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setDescriptionTab('preview')}
-                        className={`px-2 py-1 text-[10px] font-medium rounded-md flex items-center gap-1 transition-all ${
-                          descriptionTab === 'preview'
-                            ? 'bg-white dark:bg-zinc-900 text-zinc-800 dark:text-zinc-250 shadow-xs'
-                            : 'text-zinc-500 dark:text-zinc-400 hover:text-zinc-800'
-                        }`}
-                      >
-                        <Eye className="w-3 h-3" />
-                        预览
-                      </button>
-                    </div>
-                  </div>
-
-                  {descriptionTab === 'edit' ? (
-                    <div className="border border-zinc-200 dark:border-zinc-850 rounded-lg overflow-hidden bg-white dark:bg-zinc-950 flex flex-col focus-within:ring-1 focus-within:ring-zinc-900 dark:focus-within:ring-zinc-300">
-                      {/* Formatting Toolbar */}
-                      <div className="h-8.5 px-2 bg-zinc-50 dark:bg-zinc-900/50 border-b border-zinc-150 dark:border-zinc-850 flex items-center gap-1 overflow-x-auto shrink-0 select-none">
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon-xs"
-                          onClick={() => applyFormat('bold')}
-                          className="h-6 w-6 rounded text-zinc-500 hover:text-zinc-850 dark:hover:text-zinc-100"
-                          title="粗体"
-                        >
-                          <Bold className="w-3.5 h-3.5" />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon-xs"
-                          onClick={() => applyFormat('italic')}
-                          className="h-6 w-6 rounded text-zinc-500 hover:text-zinc-850 dark:hover:text-zinc-100"
-                          title="斜体"
-                        >
-                          <Italic className="w-3.5 h-3.5" />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon-xs"
-                          onClick={() => applyFormat('h3')}
-                          className="h-6 w-6 rounded text-zinc-500 hover:text-zinc-850 dark:hover:text-zinc-100"
-                          title="三级标题"
-                        >
-                          <Heading3 className="w-3.5 h-3.5" />
-                        </Button>
-                        <div className="w-px h-4 bg-zinc-200 dark:bg-zinc-800 mx-1 shrink-0" />
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon-xs"
-                          onClick={() => applyFormat('todo')}
-                          className="h-6 w-6 rounded text-zinc-500 hover:text-zinc-850 dark:hover:text-zinc-100"
-                          title="待办复选框"
-                        >
-                          <ListTodo className="w-3.5 h-3.5" />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon-xs"
-                          onClick={() => applyFormat('bullet')}
-                          className="h-6 w-6 rounded text-zinc-500 hover:text-zinc-850 dark:hover:text-zinc-100"
-                          title="无序列表"
-                        >
-                          <List className="w-3.5 h-3.5" />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon-xs"
-                          onClick={() => {
-                            const url = prompt('请输入链接地址:', 'https://');
-                            if (url) applyFormat('link', url);
-                          }}
-                          className="h-6 w-6 rounded text-zinc-500 hover:text-zinc-850 dark:hover:text-zinc-100"
-                          title="插入链接"
-                        >
-                          <Link className="w-3.5 h-3.5" />
-                        </Button>
-                        <Button
-                          type="button"
-                          variant="ghost"
-                          size="icon-xs"
-                          onClick={() => {
-                            const url = prompt('请输入图片URL链接 (支持图床载入):', 'https://');
-                            if (url) applyFormat('image_url', url);
-                          }}
-                          className="h-6 w-6 rounded text-zinc-500 hover:text-zinc-850 dark:hover:text-zinc-100"
-                          title="插入图片链接"
-                        >
-                          <Image className="w-3.5 h-3.5" />
-                        </Button>
-                      </div>
-
-                      <Textarea
-                        ref={textareaRef}
-                        placeholder="支持 Markdown 格式编排说明 (例如：**粗体**、- [ ] 任务列表、### 标题 等)..."
-                        value={description}
-                        onChange={(e) => setDescription(e.target.value)}
-                        className="min-h-32 text-xs bg-transparent border-0 rounded-none focus-visible:ring-0 resize-y leading-relaxed p-3 focus:outline-hidden"
-                      />
-                    </div>
-                  ) : (
-                    <div className="border border-zinc-200 dark:border-zinc-850 rounded-lg p-4 bg-zinc-50/50 dark:bg-zinc-950/40 min-h-[145px] max-h-72 overflow-y-auto leading-relaxed text-xs">
-                      {description.trim() ? (
-                        <div
-                          className="markdown-body prose dark:prose-invert prose-xs space-y-1 text-zinc-800 dark:text-zinc-200"
-                          dangerouslySetInnerHTML={{ __html: renderMarkdownToHtml(description) }}
-                        />
-                      ) : (
-                        <span className="text-zinc-400 italic">暂无内容预览...</span>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                {/* Images Attachment Manager */}
-                <div className="space-y-1.5">
-                  <div className="flex items-center justify-between">
-                    <label className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider flex items-center gap-1">
-                      <Image className="w-3.5 h-3.5" />
-                      图片附件 (上传至本地 / 支持图床)
-                    </label>
-                    <button
-                      type="button"
-                      onClick={() => setShowUrlInput(!showUrlInput)}
-                      className="text-[10px] text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
-                    >
-                      {showUrlInput ? '取消' : '+ 引入图床图片'}
-                    </button>
-                  </div>
-
-                  {/* External URL Image Input */}
-                  {showUrlInput && (
-                    <div className="flex gap-1.5 p-2 bg-zinc-50 dark:bg-zinc-950 rounded-lg border border-zinc-200 dark:border-zinc-850 animate-fade-in">
-                      <Input
-                        value={imageUrlInput}
-                        onChange={(e) => setImageUrlInput(e.target.value)}
-                        placeholder="输入图片 URL 直链 (例如 https://example.com/cover.png)..."
-                        className="h-8 text-xs bg-white dark:bg-zinc-900 border-zinc-200 dark:border-zinc-800 flex-1 focus-visible:ring-1"
-                      />
-                      <Button
-                        type="button"
-                        onClick={handleAddImageUrl}
-                        className="h-8 text-[11px] px-3 bg-zinc-900 text-white dark:bg-zinc-100 dark:text-zinc-900"
-                      >
-                        载入
-                      </Button>
-                    </div>
-                  )}
-
-                  {/* Grid layout for files & current images */}
-                  <div className="grid grid-cols-4 gap-2">
-                    {/* Add Local File Button Card */}
-                    <label className="h-16 border border-dashed border-zinc-300 dark:border-zinc-800 hover:border-zinc-400 dark:hover:border-zinc-700 hover:bg-zinc-50 dark:hover:bg-zinc-950/40 rounded-lg flex flex-col items-center justify-center cursor-pointer transition-all">
-                      <Upload className="w-4 h-4 text-zinc-400" />
-                      <span className="text-[9px] text-zinc-450 dark:text-zinc-500 mt-1 font-medium">本地上传</span>
-                      <input
-                        type="file"
-                        accept="image/*"
-                        multiple
-                        onChange={handleImageUpload}
-                        className="hidden"
-                      />
-                    </label>
-
-                    {/* Image Thumbnails */}
-                    {images.map((img, i) => (
-                      <div
-                        key={i}
-                        className="group relative h-16 rounded-lg overflow-hidden border border-zinc-200 dark:border-zinc-850 bg-zinc-50 animate-fade-in"
-                      >
-                        <img
-                          src={img}
-                          alt="Thumbnail"
-                          referrerPolicy="no-referrer"
-                          className="w-full h-full object-cover"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => handleRemoveImage(i)}
-                          className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white hover:text-rose-400"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                  {images.length > 0 && (
-                    <p className="text-[10px] text-zinc-400 dark:text-zinc-500 mt-1 italic">
-                      💡 提示: 首张图片将被自动选为该任务的封面。
-                    </p>
-                  )}
-                </div>
-
-                {/* Status, Priority, DueDate */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {/* Main Editing Column (Left 2 cols) */}
+                <div className="lg:col-span-2 space-y-5">
+                  {/* Title */}
                   <div className="space-y-1.5">
-                    <label className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block">任务状态</label>
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">任务名称</label>
+                    <Input
+                      placeholder="例如: 编写高并发性能测试用例..."
+                      value={title}
+                      onChange={(e) => setTitle(e.target.value)}
+                      required
+                      className="text-sm font-semibold tracking-tight h-10 border-input focus-visible:ring-1 rounded-lg"
+                    />
+                  </div>
+
+                  {/* Description with Formatting & Preview Tab */}
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">详细描述</label>
+                        <div className="flex items-center gap-1 bg-muted p-0.5 rounded-lg select-none">
+                          <button
+                            type="button"
+                            onClick={() => setDescriptionTab('edit')}
+                            className={`px-2 py-0.5 text-[10px] font-medium rounded-md flex items-center gap-1 transition-all ${
+                              descriptionTab === 'edit'
+                                ? 'bg-card text-foreground shadow-xs'
+                                : 'text-muted-foreground hover:text-foreground'
+                            }`}
+                          >
+                            <Edit3 className="w-2.5 h-2.5" />
+                            编辑
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setDescriptionTab('preview')}
+                            className={`px-2 py-0.5 text-[10px] font-medium rounded-md flex items-center gap-1 transition-all ${
+                              descriptionTab === 'preview'
+                                ? 'bg-card text-foreground shadow-xs'
+                                : 'text-muted-foreground hover:text-foreground'
+                            }`}
+                          >
+                            <Eye className="w-2.5 h-2.5" />
+                            预览
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    {descriptionTab === 'edit' ? (
+                      <div className="border border-border dark:border-border/60 rounded-lg overflow-hidden bg-card flex flex-col focus-within:ring-1 focus-within:ring-primary">
+                        {/* Formatting Toolbar */}
+                        <div className="h-8 px-2 bg-muted border-b border-border dark:border-border/60 flex items-center gap-1 overflow-x-auto shrink-0 select-none">
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-xs"
+                            onClick={() => applyFormat('bold')}
+                            className="h-5.5 w-5.5 rounded text-muted-foreground hover:text-foreground"
+                            title="粗体"
+                          >
+                            <Bold className="w-3 h-3" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-xs"
+                            onClick={() => applyFormat('italic')}
+                            className="h-5.5 w-5.5 rounded text-muted-foreground hover:text-foreground"
+                            title="斜体"
+                          >
+                            <Italic className="w-3 h-3" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-xs"
+                            onClick={() => applyFormat('h3')}
+                            className="h-5.5 w-5.5 rounded text-muted-foreground hover:text-foreground"
+                            title="三级标题"
+                          >
+                            <Heading3 className="w-3 h-3" />
+                          </Button>
+                          <div className="w-px h-3.5 bg-border mx-1 shrink-0" />
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-xs"
+                            onClick={() => applyFormat('todo')}
+                            className="h-5.5 w-5.5 rounded text-muted-foreground hover:text-foreground"
+                            title="待办复选框"
+                          >
+                            <ListTodo className="w-3.5 h-3.5" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-xs"
+                            onClick={() => applyFormat('bullet')}
+                            className="h-5.5 w-5.5 rounded text-muted-foreground hover:text-foreground"
+                            title="无序列表"
+                          >
+                            <List className="w-3 h-3" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-xs"
+                            onClick={() => {
+                              const url = prompt('请输入链接地址:', 'https://');
+                              if (url) applyFormat('link', url);
+                            }}
+                            className="h-5.5 w-5.5 rounded text-muted-foreground hover:text-foreground"
+                            title="插入链接"
+                          >
+                            <Link className="w-3 h-3" />
+                          </Button>
+                          <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon-xs"
+                            onClick={() => {
+                              const url = prompt('请输入图片URL链接 (支持图床载入):', 'https://');
+                              if (url) applyFormat('image_url', url);
+                            }}
+                            className="h-5.5 w-5.5 rounded text-muted-foreground hover:text-foreground"
+                            title="插入图片链接"
+                          >
+                            <Image className="w-3 h-3" />
+                          </Button>
+                        </div>
+
+                        <Textarea
+                          ref={textareaRef}
+                          placeholder="支持 Markdown 格式编排说明 (例如：**粗体**、- [ ] 任务列表、### 标题 等)..."
+                          value={description}
+                          onChange={(e) => setDescription(e.target.value)}
+                          className="min-h-36 text-sm font-sans bg-transparent border-0 rounded-none focus-visible:ring-0 resize-y leading-relaxed p-3 focus:outline-hidden"
+                        />
+                      </div>
+                    ) : (
+                      <div className="border border-border dark:border-border/60 rounded-lg p-4 bg-muted min-h-[175px] max-h-72 overflow-y-auto leading-relaxed text-sm text-foreground">
+                        {description.trim() ? (
+                          <div
+                            className="markdown-body prose dark:prose-invert prose-sm space-y-1"
+                            dangerouslySetInnerHTML={{ __html: renderMarkdownToHtml(description) }}
+                          />
+                        ) : (
+                          <span className="text-muted-foreground italic">暂无内容预览...</span>
+                        )}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Images Attachment Manager */}
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
+                        <Image className="w-3.5 h-3.5" />
+                        图片附件 ({images.length})
+                      </label>
+                      <button
+                        type="button"
+                        onClick={() => setShowUrlInput(!showUrlInput)}
+                        className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline font-medium"
+                      >
+                        {showUrlInput ? '取消' : '+ 引入图床图片'}
+                      </button>
+                    </div>
+
+                    {/* External URL Image Input */}
+                    {showUrlInput && (
+                      <div className="flex gap-1.5 p-2 bg-muted rounded-lg border border-border dark:border-border/60 animate-fade-in">
+                        <Input
+                          value={imageUrlInput}
+                          onChange={(e) => setImageUrlInput(e.target.value)}
+                          placeholder="输入图片 URL 直链 (如 https://example.com/cover.png)..."
+                          className="h-8 text-xs bg-card border-input flex-1 focus-visible:ring-1"
+                        />
+                        <Button
+                          type="button"
+                          onClick={handleAddImageUrl}
+                          className="h-8 text-[11px] px-3 bg-foreground text-background hover:bg-foreground/90"
+                        >
+                          载入图片
+                        </Button>
+                      </div>
+                    )}
+
+                    {/* Grid layout for files & current images */}
+                    <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2">
+                      {/* Add Local File Card */}
+                      <label className="h-16 border border-dashed border-border hover:border-muted-foreground hover:bg-muted rounded-lg flex flex-col items-center justify-center cursor-pointer transition-all">
+                        <Upload className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-[9px] text-muted-foreground mt-1 font-medium">本地上传</span>
+                        <input
+                          type="file"
+                          accept="image/*"
+                          multiple
+                          onChange={handleImageUpload}
+                          className="hidden"
+                        />
+                      </label>
+
+                      {/* Image Thumbnails */}
+                      {images.map((img, i) => (
+                        <div
+                          key={i}
+                          className="group relative h-16 rounded-lg overflow-hidden border border-border dark:border-border/60 bg-muted animate-fade-in"
+                        >
+                          <img
+                            src={img}
+                            alt="Attachment"
+                            referrerPolicy="no-referrer"
+                            className="w-full h-full object-cover"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => handleRemoveImage(i)}
+                            className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity text-white hover:text-rose-400"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Metadata & Operations Sidebar (Right 1 col) */}
+                <div className="border-t lg:border-t-0 lg:border-l border-border dark:border-border/60 pt-5 lg:pt-0 lg:pl-6 space-y-4">
+
+                  {/* Status Selector */}
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block">任务状态</label>
                     <Select value={status} onValueChange={(val: any) => setStatus(val)}>
-                      <SelectTrigger className="w-full text-xs h-9 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-850 rounded-lg">
-                        <SelectValue placeholder="选择列" />
+                      <SelectTrigger className="w-full text-xs h-8.5 bg-card rounded-lg">
+                        <SelectValue placeholder="任务状态" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white dark:bg-zinc-900 text-xs border border-zinc-200 dark:border-zinc-800 rounded-lg">
-                        <SelectItem value="todo">待办 (todo)</SelectItem>
-                        <SelectItem value="in-progress">进行中 (in-progress)</SelectItem>
-                        <SelectItem value="done">已完成 (done)</SelectItem>
+                      <SelectContent className="text-xs rounded-lg">
+                        <SelectItem value="todo">待办 (Todo)</SelectItem>
+                        <SelectItem value="in-progress">进行中 (In Progress)</SelectItem>
+                        <SelectItem value="done">已完成 (Done)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block">任务优先级</label>
+                  {/* Priority Selector */}
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block">优先级</label>
                     <Select value={priority} onValueChange={(val: any) => setPriority(val)}>
-                      <SelectTrigger className="w-full text-xs h-9 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-850 rounded-lg">
+                      <SelectTrigger className="w-full text-xs h-8.5 bg-card rounded-lg">
                         <SelectValue placeholder="优先级" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white dark:bg-zinc-900 text-xs border border-zinc-200 dark:border-zinc-800 rounded-lg">
+                      <SelectContent className="text-xs rounded-lg">
                         <SelectItem value="high">🔴 高优先级</SelectItem>
                         <SelectItem value="medium">🟡 中优先级</SelectItem>
                         <SelectItem value="low">🟢 低优先级</SelectItem>
@@ -555,68 +567,76 @@ export function NewTaskModal({ isOpen, onClose, defaultStatus }: NewTaskModalPro
                     </Select>
                   </div>
 
-                  <div className="space-y-1.5">
-                    <label className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block">截止日期</label>
+                  {/* Due Date picker */}
+                  <div className="space-y-1">
+                    <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block">截止日期</label>
                     <div className="relative">
-                      <Calendar className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-zinc-400 pointer-events-none" />
+                      <Calendar className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none z-10" />
                       <Input
                         type="date"
                         value={dueDate}
                         onChange={(e) => setDueDate(e.target.value)}
-                        className="pl-8 text-xs h-9 bg-white dark:bg-zinc-950 border-zinc-200 dark:border-zinc-850 rounded-lg font-mono focus-visible:ring-1"
+                        className="pl-8 text-xs h-8.5 bg-muted border-input rounded-lg font-mono text-foreground placeholder:text-muted-foreground dark:[color-scheme:dark]"
                       />
                     </div>
                   </div>
-                </div>
 
-                {/* Label Manager checkboxes */}
-                <div className="space-y-1.5">
-                  <label className="text-[11px] font-bold text-zinc-400 dark:text-zinc-500 uppercase tracking-wider block">关联标签</label>
-                  <div className="border border-zinc-150 dark:border-zinc-850 rounded-lg p-3 bg-zinc-50/50 dark:bg-zinc-950/20 flex flex-wrap gap-1.5 max-h-36 overflow-y-auto">
-                    {labels.map((lbl) => {
-                      const isSelected = selectedLabelIds.includes(lbl.id);
-                      return (
-                        <button
-                          key={lbl.id}
-                          type="button"
-                          onClick={() => handleToggleLabel(lbl.id)}
-                          className={`flex items-center gap-1 text-[11px] py-1 px-2.5 rounded-full border transition-all ${
-                            isSelected
-                              ? 'bg-zinc-900 text-white border-zinc-900 dark:bg-zinc-100 dark:text-zinc-900 dark:border-zinc-100 font-medium scale-102 shadow-xs'
-                              : `${labelColorMap[lbl.color] || labelColorMap.gray} opacity-70 hover:opacity-100`
-                          }`}
-                        >
-                          {lbl.name}
-                          {isSelected && <Check className="w-3 h-3" />}
-                        </button>
-                      );
-                    })}
-                    {labels.length === 0 && (
-                      <span className="text-xs text-zinc-400 italic">暂无可用标签，可在上方自定义创建。</span>
-                    )}
+                  {/* Labels checklist */}
+                  <div className="space-y-1.5">
+                    <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block">所属标签</label>
+                    <div className="rounded-lg divide-y divide-border max-h-48 overflow-y-auto overflow-x-hidden">
+                      {labels.length > 0 ? (
+                        labels.map((lbl) => {
+                          const isChecked = selectedLabelIds.includes(lbl.id);
+                          return (
+                            <button
+                              key={lbl.id}
+                              type="button"
+                              onClick={() => handleToggleLabel(lbl.id)}
+                              className={`w-full flex items-center justify-between text-left text-xs py-2 px-1.5 transition-colors ${
+                                isChecked
+                                  ? 'font-medium'
+                                  : 'text-muted-foreground hover:text-foreground'
+                              }`}
+                            >
+                              <Badge variant="outline" className={`text-[11px] py-0 border ${labelColorMap[lbl.color] || labelColorMap.gray}`}>
+                                {lbl.name}
+                              </Badge>
+                              <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${
+                                isChecked
+                                  ? `${labelIndicatorColorMap[lbl.color] || labelIndicatorColorMap.gray} border-current text-white`
+                                  : 'border-muted-foreground'
+                              }`}>
+                                {isChecked && <Check className="w-2.5 h-2.5" />}
+                              </span>
+                            </button>
+                          );
+                        })
+                      ) : (
+                        <span className="text-[11px] text-muted-foreground italic p-1 block">暂无标签，可使用顶部标签管理创建</span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Bottom Actions Row */}
+                  <div className="pt-4 border-t border-border dark:border-border/60 space-y-2">
+                    <Button
+                      onClick={handleCreate}
+                      disabled={!title.trim()}
+                      className="w-full h-8.5 text-xs rounded-lg font-semibold bg-foreground text-background hover:bg-foreground/90"
+                    >
+                      保存并新建
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={onClose}
+                      className="w-full h-8.5 text-xs rounded-lg font-medium border-border"
+                    >
+                      取消
+                    </Button>
                   </div>
                 </div>
-              </form>
-            </div>
-
-            {/* Footer buttons */}
-            <div className="h-16 px-6 border-t border-zinc-150 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-900/50 flex items-center justify-end gap-2.5 shrink-0">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={onClose}
-                className="h-9 text-xs rounded-lg font-medium border-zinc-200 dark:border-zinc-800"
-              >
-                取消
-              </Button>
-              <Button
-                type="button"
-                onClick={handleCreate}
-                disabled={!title.trim()}
-                className="h-9 text-xs rounded-lg font-semibold px-4 text-white bg-zinc-900 hover:bg-zinc-800 dark:bg-zinc-100 dark:text-zinc-900 dark:hover:bg-zinc-200"
-              >
-                保存并新建
-              </Button>
+              </div>
             </div>
           </motion.div>
         </>

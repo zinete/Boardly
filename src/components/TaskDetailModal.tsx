@@ -272,16 +272,29 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
     : [];
 
   const labelColorMap: Record<string, string> = {
-    blue: 'bg-blue-500/10 text-blue-600 dark:text-blue-400 border-blue-500/20',
-    emerald: 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border-emerald-500/20',
-    green: 'bg-green-500/10 text-green-600 dark:text-green-400 border-green-500/20',
-    amber: 'bg-amber-500/10 text-amber-600 dark:text-amber-400 border-amber-500/20',
-    red: 'bg-red-500/10 text-red-600 dark:text-red-400 border-red-500/20',
-    rose: 'bg-rose-500/10 text-rose-600 dark:text-rose-400 border-rose-500/20',
-    purple: 'bg-purple-500/10 text-purple-600 dark:text-purple-400 border-purple-500/20',
-    indigo: 'bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border-indigo-500/20',
-    pink: 'bg-pink-500/10 text-pink-600 dark:text-pink-400 border-pink-500/20',
-    gray: 'bg-slate-500/10 text-slate-600 dark:text-slate-400 border-slate-500/20',
+    blue: 'bg-blue-500/15 text-blue-600 dark:text-blue-400 border-transparent dark:border-transparent',
+    emerald: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border-transparent dark:border-transparent',
+    green: 'bg-green-500/15 text-green-600 dark:text-green-400 border-transparent dark:border-transparent',
+    amber: 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border-transparent dark:border-transparent',
+    red: 'bg-red-500/15 text-red-600 dark:text-red-400 border-transparent dark:border-transparent',
+    rose: 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border-transparent dark:border-transparent',
+    purple: 'bg-purple-500/15 text-purple-600 dark:text-purple-400 border-transparent dark:border-transparent',
+    indigo: 'bg-indigo-500/15 text-indigo-600 dark:text-indigo-400 border-transparent dark:border-transparent',
+    pink: 'bg-pink-500/15 text-pink-600 dark:text-pink-400 border-transparent dark:border-transparent',
+    gray: 'bg-slate-500/15 text-slate-600 dark:text-slate-400 border-transparent dark:border-transparent',
+  };
+
+  const labelIndicatorColorMap: Record<string, string> = {
+    blue: 'bg-blue-500 border-blue-500',
+    emerald: 'bg-emerald-500 border-emerald-500',
+    green: 'bg-green-500 border-green-500',
+    amber: 'bg-amber-500 border-amber-500',
+    red: 'bg-red-500 border-red-500',
+    rose: 'bg-rose-500 border-rose-500',
+    purple: 'bg-purple-500 border-purple-500',
+    indigo: 'bg-indigo-500 border-indigo-500',
+    pink: 'bg-pink-500 border-pink-500',
+    gray: 'bg-slate-500 border-slate-500',
   };
 
   return (
@@ -303,17 +316,17 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 28, stiffness: 220 }}
-            className="fixed top-0 right-0 bottom-0 z-50 w-full sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl h-full bg-white dark:bg-slate-900 shadow-2xl border-l border-slate-200 dark:border-slate-800 flex flex-col overflow-hidden text-slate-900 dark:text-slate-100"
+            className="fixed top-0 right-0 bottom-0 z-50 w-full sm:max-w-md md:max-w-lg lg:max-w-xl xl:max-w-2xl h-full bg-card shadow-2xl border-l border-border dark:border-border/60 flex flex-col overflow-hidden"
           >
             {/* Header */}
-            <div className="h-16 px-6 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between bg-slate-50/50 dark:bg-slate-900/50 shrink-0">
+            <div className="h-16 px-6 border-b border-border dark:border-border/60 flex items-center justify-between bg-popover/95 shrink-0">
               <div className="flex items-center gap-2">
                 <div className="p-1.5 rounded-lg bg-indigo-50 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400">
                   <Brain className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-50">任务详情与编辑</h3>
-                  <div className="flex items-center gap-1.5 text-[10px] text-slate-400 dark:text-slate-500 font-mono">
+                  <h3 className="text-sm font-semibold text-foreground">任务详情与编辑</h3>
+                  <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground font-mono">
                     <span>ID: {activeTask.id.substring(0, 12)}...</span>
                     <span>•</span>
                     <span>创建于: {new Date(activeTask.createdAt).toLocaleString()}</span>
@@ -324,7 +337,7 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                 variant="ghost"
                 size="icon"
                 onClick={onClose}
-                className="h-8 w-8 rounded-lg text-slate-400 hover:text-slate-650 dark:hover:text-slate-200"
+                className="h-8 w-8 rounded-lg text-muted-foreground hover:text-foreground"
               >
                 <X className="w-4 h-4" />
               </Button>
@@ -339,12 +352,12 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                 <div className="lg:col-span-2 space-y-5">
                   {/* Title editing */}
                   <div className="space-y-1.5">
-                    <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider block">任务名称</label>
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider block">任务名称</label>
                     <Input
                       value={title}
                       onChange={(e) => setTitle(e.target.value)}
                       placeholder="无标题任务"
-                      className="text-sm font-semibold tracking-tight h-10 border-slate-200 dark:border-slate-800 focus-visible:ring-1 rounded-lg"
+                      className="text-sm font-semibold tracking-tight h-10 border-input focus-visible:ring-1 rounded-lg"
                     />
                   </div>
 
@@ -352,15 +365,15 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                   <div className="space-y-1.5">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
-                        <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider">详细描述</label>
-                        <div className="flex items-center gap-1 bg-slate-100 dark:bg-slate-800 p-0.5 rounded-lg select-none">
+                        <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">详细描述</label>
+                        <div className="flex items-center gap-1 bg-muted p-0.5 rounded-lg select-none">
                           <button
                             type="button"
                             onClick={() => setDescriptionTab('edit')}
                             className={`px-2 py-0.5 text-[10px] font-medium rounded-md flex items-center gap-1 transition-all ${
                               descriptionTab === 'edit'
-                                ? 'bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 shadow-xs'
-                                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                                ? 'bg-card text-foreground shadow-xs'
+                                : 'text-muted-foreground hover:text-foreground'
                             }`}
                           >
                             <Edit3 className="w-2.5 h-2.5" />
@@ -371,8 +384,8 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                             onClick={() => setDescriptionTab('preview')}
                             className={`px-2 py-0.5 text-[10px] font-medium rounded-md flex items-center gap-1 transition-all ${
                               descriptionTab === 'preview'
-                                ? 'bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 shadow-xs'
-                                : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
+                                ? 'bg-card text-foreground shadow-xs'
+                                : 'text-muted-foreground hover:text-foreground'
                             }`}
                           >
                             <Eye className="w-2.5 h-2.5" />
@@ -387,7 +400,7 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                         disabled={aiLoading}
                         size="sm"
                         variant="outline"
-                        className="h-7 text-xs border-indigo-500/30 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-950/30 gap-1 rounded-md"
+                        className="h-7 text-xs border-indigo-500/30 text-indigo-600 hover:bg-indigo-50 dark:text-indigo-400 dark:hover:bg-indigo-950/30 gap-1 rounded-md"
                       >
                         {aiLoading ? (
                           <>
@@ -404,15 +417,15 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                     </div>
 
                     {descriptionTab === 'edit' ? (
-                      <div className="border border-slate-200 dark:border-slate-800 rounded-lg overflow-hidden bg-white dark:bg-slate-950 flex flex-col focus-within:ring-1 focus-within:ring-primary">
+                      <div className="border border-border dark:border-border/60 rounded-lg overflow-hidden bg-card flex flex-col focus-within:ring-1 focus-within:ring-primary">
                         {/* Formatting Toolbar */}
-                        <div className="h-8 px-2 bg-slate-50 dark:bg-slate-900/50 border-b border-slate-150 dark:border-slate-800/80 flex items-center gap-1 overflow-x-auto shrink-0 select-none">
+                        <div className="h-8 px-2 bg-muted border-b border-border dark:border-border/60 flex items-center gap-1 overflow-x-auto shrink-0 select-none">
                           <Button
                             type="button"
                             variant="ghost"
                             size="icon-xs"
                             onClick={() => applyFormat('bold')}
-                            className="h-5.5 w-5.5 rounded text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                            className="h-5.5 w-5.5 rounded text-muted-foreground hover:text-foreground"
                             title="粗体"
                           >
                             <Bold className="w-3 h-3" />
@@ -422,7 +435,7 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                             variant="ghost"
                             size="icon-xs"
                             onClick={() => applyFormat('italic')}
-                            className="h-5.5 w-5.5 rounded text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                            className="h-5.5 w-5.5 rounded text-muted-foreground hover:text-foreground"
                             title="斜体"
                           >
                             <Italic className="w-3 h-3" />
@@ -432,18 +445,18 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                             variant="ghost"
                             size="icon-xs"
                             onClick={() => applyFormat('h3')}
-                            className="h-5.5 w-5.5 rounded text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                            className="h-5.5 w-5.5 rounded text-muted-foreground hover:text-foreground"
                             title="三级标题"
                           >
                             <Heading3 className="w-3 h-3" />
                           </Button>
-                          <div className="w-px h-3.5 bg-slate-200 dark:bg-slate-800 mx-1 shrink-0" />
+                          <div className="w-px h-3.5 bg-border mx-1 shrink-0" />
                           <Button
                             type="button"
                             variant="ghost"
                             size="icon-xs"
                             onClick={() => applyFormat('todo')}
-                            className="h-5.5 w-5.5 rounded text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                            className="h-5.5 w-5.5 rounded text-muted-foreground hover:text-foreground"
                             title="待办复选框"
                           >
                             <ListTodo className="w-3.5 h-3.5" />
@@ -453,7 +466,7 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                             variant="ghost"
                             size="icon-xs"
                             onClick={() => applyFormat('bullet')}
-                            className="h-5.5 w-5.5 rounded text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                            className="h-5.5 w-5.5 rounded text-muted-foreground hover:text-foreground"
                             title="无序列表"
                           >
                             <List className="w-3 h-3" />
@@ -466,7 +479,7 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                               const url = prompt('请输入链接地址:', 'https://');
                               if (url) applyFormat('link', url);
                             }}
-                            className="h-5.5 w-5.5 rounded text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                            className="h-5.5 w-5.5 rounded text-muted-foreground hover:text-foreground"
                             title="插入链接"
                           >
                             <Link className="w-3 h-3" />
@@ -479,7 +492,7 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                               const url = prompt('请输入图片URL链接 (支持图床载入):', 'https://');
                               if (url) applyFormat('image_url', url);
                             }}
-                            className="h-5.5 w-5.5 rounded text-slate-500 hover:text-slate-800 dark:hover:text-slate-200"
+                            className="h-5.5 w-5.5 rounded text-muted-foreground hover:text-foreground"
                             title="插入图片链接"
                           >
                             <Image className="w-3 h-3" />
@@ -495,14 +508,14 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                         />
                       </div>
                     ) : (
-                      <div className="border border-slate-200 dark:border-slate-800 rounded-lg p-4 bg-slate-50/50 dark:bg-slate-950/40 min-h-[175px] max-h-72 overflow-y-auto leading-relaxed text-sm text-slate-800 dark:text-slate-200">
+                      <div className="border border-border dark:border-border/60 rounded-lg p-4 bg-muted min-h-[175px] max-h-72 overflow-y-auto leading-relaxed text-sm text-foreground">
                         {description.trim() ? (
                           <div
                             className="markdown-body prose dark:prose-invert prose-sm space-y-1"
                             dangerouslySetInnerHTML={{ __html: renderMarkdownToHtml(description) }}
                           />
                         ) : (
-                          <span className="text-slate-400 dark:text-slate-500 italic">暂无内容预览...</span>
+                          <span className="text-muted-foreground italic">暂无内容预览...</span>
                         )}
                       </div>
                     )}
@@ -511,7 +524,7 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                   {/* Images Attachment Manager */}
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                      <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
                         <Image className="w-3.5 h-3.5" />
                         图片附件 ({images.length})
                       </label>
@@ -526,17 +539,17 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
 
                     {/* External URL Image Input */}
                     {showUrlInput && (
-                      <div className="flex gap-1.5 p-2 bg-slate-50 dark:bg-slate-950 rounded-lg border border-slate-200 dark:border-slate-850 animate-fade-in">
+                      <div className="flex gap-1.5 p-2 bg-muted rounded-lg border border-border dark:border-border/60 animate-fade-in">
                         <Input
                           value={imageUrlInput}
                           onChange={(e) => setImageUrlInput(e.target.value)}
                           placeholder="输入图片 URL 直链 (如 https://example.com/cover.png)..."
-                          className="h-8 text-xs bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 flex-1 focus-visible:ring-1"
+                          className="h-8 text-xs bg-card border-input flex-1 focus-visible:ring-1"
                         />
                         <Button
                           type="button"
                           onClick={handleAddImageUrl}
-                          className="h-8 text-[11px] px-3 bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900"
+                          className="h-8 text-[11px] px-3 bg-foreground text-background hover:bg-foreground/90"
                         >
                           载入图片
                         </Button>
@@ -546,9 +559,9 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                     {/* Grid layout for files & current images */}
                     <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-6 gap-2">
                       {/* Add Local File Card */}
-                      <label className="h-16 border border-dashed border-slate-300 dark:border-slate-855 hover:border-slate-400 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-955 rounded-lg flex flex-col items-center justify-center cursor-pointer transition-all">
-                        <Upload className="w-4 h-4 text-slate-400" />
-                        <span className="text-[9px] text-slate-450 dark:text-slate-500 mt-1 font-medium">本地上传</span>
+                      <label className="h-16 border border-dashed border-border hover:border-muted-foreground hover:bg-muted rounded-lg flex flex-col items-center justify-center cursor-pointer transition-all">
+                        <Upload className="w-4 h-4 text-muted-foreground" />
+                        <span className="text-[9px] text-muted-foreground mt-1 font-medium">本地上传</span>
                         <input
                           type="file"
                           accept="image/*"
@@ -562,7 +575,7 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                       {images.map((img, i) => (
                         <div
                           key={i}
-                          className="group relative h-16 rounded-lg overflow-hidden border border-slate-200 dark:border-slate-800 bg-slate-50 animate-fade-in"
+                          className="group relative h-16 rounded-lg overflow-hidden border border-border dark:border-border/60 bg-muted animate-fade-in"
                         >
                           <img
                             src={img}
@@ -599,17 +612,17 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                         </Button>
                       </div>
 
-                      <p className="text-xs text-slate-600 dark:text-slate-400 italic">
+                      <p className="text-xs text-muted-foreground italic">
                         "{aiResult.explanation}"
                       </p>
 
                       <div className="grid grid-cols-2 gap-2 text-xs">
                         <div>
-                          <span className="text-slate-400 block mb-0.5">建议优先级</span>
+                          <span className="text-muted-foreground block mb-0.5">建议优先级</span>
                           <span className="font-semibold text-indigo-600 dark:text-indigo-400 uppercase">{aiResult.priority}</span>
                         </div>
                         <div>
-                          <span className="text-slate-400 block mb-0.5">关联推荐标签</span>
+                          <span className="text-muted-foreground block mb-0.5">关联推荐标签</span>
                           <div className="flex flex-wrap gap-1">
                             {aiResult.suggestedLabelIds.map((lid) => {
                               const lbl = labels.find((l) => l.id === lid);
@@ -619,18 +632,18 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                                 </Badge>
                               ) : null;
                             })}
-                            {aiResult.suggestedLabelIds.length === 0 && <span className="text-slate-400 italic">无</span>}
+                            {aiResult.suggestedLabelIds.length === 0 && <span className="text-muted-foreground italic">无</span>}
                           </div>
                         </div>
                       </div>
 
                       {aiResult.subtasks && aiResult.subtasks.length > 0 && (
                         <div className="space-y-1.5 pt-2 border-t border-indigo-100/50 dark:border-indigo-900/20">
-                          <span className="text-xs font-medium text-slate-600 dark:text-slate-400 flex items-center gap-1">
+                          <span className="text-xs font-medium text-muted-foreground flex items-center gap-1">
                             <ListTodo className="w-3.5 h-3.5 text-indigo-500" />
                             建议执行步骤：
                           </span>
-                          <ul className="list-disc pl-4.5 space-y-1 text-xs text-slate-500">
+                          <ul className="list-disc pl-4.5 space-y-1 text-xs text-foreground">
                             {aiResult.subtasks.map((st, i) => (
                               <li key={i}>{st}</li>
                             ))}
@@ -641,14 +654,14 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                   )}
 
                   {aiError && (
-                    <div className="p-3 border border-red-200 bg-red-50/30 text-red-600 dark:border-red-900/50 text-xs rounded-lg">
+                    <div className="p-3 border border-red-200 bg-red-50/30 text-red-600 text-xs rounded-lg">
                       {aiError}
                     </div>
                   )}
 
                   {/* Linked Tasks (关联任务) Section */}
                   <div className="space-y-2 pt-2">
-                    <label className="text-xs font-semibold text-slate-400 uppercase tracking-wider flex items-center gap-1">
+                    <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider flex items-center gap-1">
                       <Link2 className="w-3.5 h-3.5" />
                       关联任务 ({linkedTasks.length})
                     </label>
@@ -656,17 +669,17 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                     {/* Add New Link Form */}
                     <div className="flex gap-2">
                       <Select value={linkCandidateId} onValueChange={setLinkCandidateId}>
-                        <SelectTrigger className="w-full text-xs h-8.5 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 rounded-lg">
+                        <SelectTrigger className="w-full text-xs h-8.5 bg-card rounded-lg">
                           <SelectValue placeholder="选择其他任务进行关联..." />
                         </SelectTrigger>
-                        <SelectContent className="bg-white dark:bg-slate-900 text-xs border border-slate-200 dark:border-slate-800 rounded-lg max-h-48 overflow-y-auto">
+                        <SelectContent className="text-xs rounded-lg max-h-48 overflow-y-auto">
                           {availableToLink.map((t) => (
                             <SelectItem key={t.id} value={t.id}>
                               [{t.status === 'done' ? '已完成' : t.status === 'in-progress' ? '进行中' : '待办'}] {t.title}
                             </SelectItem>
                           ))}
                           {availableToLink.length === 0 && (
-                            <div className="text-xs text-slate-400 py-1 px-2">没有可关联的其他任务</div>
+                            <div className="text-xs text-muted-foreground py-1 px-2">没有可关联的其他任务</div>
                           )}
                         </SelectContent>
                       </Select>
@@ -684,24 +697,24 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
 
                     {/* Linked Tasks List */}
                     {linkedTasks.length > 0 ? (
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 border border-slate-100 dark:border-slate-800 p-2.5 rounded-lg bg-slate-50/50 dark:bg-slate-950/20 max-h-44 overflow-y-auto">
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-2 border border-border dark:border-border/60 p-2.5 rounded-lg bg-muted max-h-44 overflow-y-auto">
                         {linkedTasks.map((t) => (
                           <div
                             key={t.id}
-                            className="flex items-center justify-between p-2 rounded border bg-white dark:bg-slate-950 border-slate-100 dark:border-slate-850 hover:border-slate-300 dark:hover:border-slate-700 hover:shadow-sm transition-all"
+                            className="flex items-center justify-between p-2 rounded border bg-card border-border dark:border-border/60 hover:border-muted-foreground hover:shadow-sm transition-all"
                           >
                             <button
                               onClick={() => onNavigateToTask(t.id)}
-                              className="text-left text-xs font-medium text-slate-700 dark:text-slate-300 hover:text-primary hover:underline line-clamp-1 flex-1 pr-1 flex items-center gap-1"
+                              className="text-left text-xs font-medium text-foreground hover:text-primary hover:underline line-clamp-1 flex-1 pr-1 flex items-center gap-1"
                             >
-                              <ChevronRight className="w-3 h-3 text-slate-400 shrink-0" />
+                              <ChevronRight className="w-3 h-3 text-muted-foreground shrink-0" />
                               <span>{t.title}</span>
                             </button>
                             <Button
                               size="icon-xs"
                               variant="ghost"
                               onClick={() => handleUnlinkTask(t.id)}
-                              className="text-slate-400 hover:text-rose-500 hover:bg-rose-500/10 rounded-md transition-colors"
+                              className="text-muted-foreground hover:text-rose-500 hover:bg-rose-500/10 rounded-md transition-colors"
                               title="解除关联"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -710,22 +723,22 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                         ))}
                       </div>
                     ) : (
-                      <p className="text-xs text-slate-400 italic">暂无任何关联任务。</p>
+                      <p className="text-xs text-muted-foreground italic">暂无任何关联任务。</p>
                     )}
                   </div>
                 </div>
 
                 {/* Metadata & Operations Sidebar (Right 1 col) */}
-                <div className="border-t lg:border-t-0 lg:border-l border-slate-100 dark:border-slate-800 pt-5 lg:pt-0 lg:pl-6 space-y-4">
+                <div className="border-t lg:border-t-0 lg:border-l border-border dark:border-border/60 pt-5 lg:pt-0 lg:pl-6 space-y-4">
                   
                   {/* Status Selector */}
                   <div className="space-y-1">
-                    <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">任务状态</label>
+                    <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block">任务状态</label>
                     <Select value={status} onValueChange={(val: any) => setStatus(val)}>
-                      <SelectTrigger className="w-full text-xs h-8.5 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 rounded-lg">
+                      <SelectTrigger className="w-full text-xs h-8.5 bg-card rounded-lg">
                         <SelectValue placeholder="任务状态" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white dark:bg-slate-900 text-xs border border-slate-200 dark:border-slate-800 rounded-lg">
+                      <SelectContent className="text-xs rounded-lg">
                         <SelectItem value="todo">待办 (Todo)</SelectItem>
                         <SelectItem value="in-progress">进行中 (In Progress)</SelectItem>
                         <SelectItem value="done">已完成 (Done)</SelectItem>
@@ -735,12 +748,12 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
 
                   {/* Priority Selector */}
                   <div className="space-y-1">
-                    <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">优先级</label>
+                    <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block">优先级</label>
                     <Select value={priority} onValueChange={(val: any) => setPriority(val)}>
-                      <SelectTrigger className="w-full text-xs h-8.5 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 rounded-lg">
+                      <SelectTrigger className="w-full text-xs h-8.5 bg-card rounded-lg">
                         <SelectValue placeholder="优先级" />
                       </SelectTrigger>
-                      <SelectContent className="bg-white dark:bg-slate-900 text-xs border border-slate-200 dark:border-slate-800 rounded-lg">
+                      <SelectContent className="text-xs rounded-lg">
                         <SelectItem value="high">🔴 高优先级</SelectItem>
                         <SelectItem value="medium">🟡 中优先级</SelectItem>
                         <SelectItem value="low">🟢 低优先级</SelectItem>
@@ -750,22 +763,22 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
 
                   {/* Due Date picker */}
                   <div className="space-y-1">
-                    <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">截止日期</label>
+                    <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block">截止日期</label>
                     <div className="relative">
-                      <Calendar className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-slate-400 pointer-events-none" />
+                      <Calendar className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-muted-foreground pointer-events-none z-10" />
                       <Input
                         type="date"
                         value={dueDate}
                         onChange={(e) => setDueDate(e.target.value)}
-                        className="pl-8 text-xs h-8.5 bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-800 rounded-lg font-mono"
+                        className="pl-8 text-xs h-8.5 bg-muted border-input rounded-lg font-mono text-foreground placeholder:text-muted-foreground dark:[color-scheme:dark]"
                       />
                     </div>
                   </div>
 
                   {/* Labels checklist */}
                   <div className="space-y-1.5">
-                    <label className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider block">所属标签</label>
-                    <div className="border border-slate-100 dark:border-slate-800/80 rounded-lg p-2.5 bg-slate-50/50 dark:bg-slate-900/30 max-h-48 overflow-y-auto overflow-x-hidden space-y-1.5">
+                    <label className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider block">所属标签</label>
+                    <div className="rounded-lg divide-y divide-border max-h-48 overflow-y-auto overflow-x-hidden">
                       {labels.length > 0 ? (
                         labels.map((lbl) => {
                           const isChecked = taskLabels.includes(lbl.id);
@@ -774,32 +787,36 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                               key={lbl.id}
                               type="button"
                               onClick={() => handleToggleLabel(lbl.id)}
-                              className={`w-full flex items-center justify-between text-left text-xs p-1.5 rounded transition-colors ${
+                              className={`w-full flex items-center justify-between text-left text-xs py-2 px-1.5 transition-colors ${
                                 isChecked
-                                  ? 'bg-slate-100/80 dark:bg-slate-850 font-medium'
-                                  : 'hover:bg-slate-100/50 dark:hover:bg-slate-800/40 text-slate-500'
+                                  ? 'font-medium'
+                                  : 'text-muted-foreground hover:text-foreground'
                               }`}
                             >
                               <Badge variant="outline" className={`text-[11px] py-0 border ${labelColorMap[lbl.color] || labelColorMap.gray}`}>
                                 {lbl.name}
                               </Badge>
-                              <span className={`w-3.5 h-3.5 rounded-sm border flex items-center justify-center text-[9px] text-white ${isChecked ? 'bg-primary border-primary' : 'border-slate-300'}`}>
-                                {isChecked && '✓'}
+                              <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all ${
+                                isChecked
+                                  ? `${labelIndicatorColorMap[lbl.color] || labelIndicatorColorMap.gray} border-current text-white`
+                                  : 'border-muted-foreground'
+                              }`}>
+                                {isChecked && <Check className="w-2.5 h-2.5" />}
                               </span>
                             </button>
                           );
                         })
                       ) : (
-                        <span className="text-[11px] text-slate-400 italic p-1 block">暂无标签，可使用顶部标签管理创建</span>
+                        <span className="text-[11px] text-muted-foreground italic p-1 block">暂无标签，可使用顶部标签管理创建</span>
                       )}
                     </div>
                   </div>
 
                   {/* Bottom Actions Row */}
-                  <div className="pt-4 border-t border-slate-100 dark:border-slate-800 space-y-2">
+                  <div className="pt-4 border-t border-border dark:border-border/60 space-y-2">
                     <Button
                       onClick={handleSave}
-                      className="w-full h-8.5 text-xs rounded-lg font-semibold bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900 hover:bg-slate-800 dark:hover:bg-slate-200"
+                      className="w-full h-8.5 text-xs rounded-lg font-semibold bg-foreground text-background hover:bg-foreground/90"
                     >
                       保存修改
                     </Button>
@@ -818,7 +835,7 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                           <Button
                             variant="outline"
                             onClick={() => setIsConfirmingDelete(false)}
-                            className="h-8.5 text-xs rounded-lg font-medium border-slate-200"
+                            className="h-8.5 text-xs rounded-lg font-medium border-border"
                           >
                             取消
                           </Button>

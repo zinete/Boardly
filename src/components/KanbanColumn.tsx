@@ -110,20 +110,20 @@ export function KanbanColumn({ status, title, onOpenDetails, onAddTask }: Kanban
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className={`flex flex-col h-full rounded-2xl p-4 border transition-colors duration-200 w-full min-w-[280px] bg-zinc-50/50 dark:bg-zinc-900/40 ${
+      className={`flex flex-col h-full rounded-2xl p-4 border transition-colors duration-200 w-full min-w-[280px] bg-muted/50 ${
         isOver
-          ? 'border-zinc-900/40 bg-zinc-100/50 dark:bg-zinc-800/50 shadow-inner'
-          : 'border-zinc-200/60 dark:border-zinc-800/60'
+          ? 'border-border bg-muted/80 shadow-inner'
+          : 'border-border'
       }`}
     >
       {/* Column Header */}
       <div className="flex items-center justify-between mb-4 px-1.5 pt-1">
         <div className="flex items-center gap-2">
           {getHeaderIcon()}
-          <h3 className="font-semibold text-zinc-800 dark:text-zinc-100 text-sm tracking-wide">
+          <h3 className="font-semibold text-foreground text-sm tracking-wide">
             {title}
           </h3>
-          <span className="text-[11px] font-sans font-semibold px-2 py-0.5 rounded-full bg-zinc-200/60 dark:bg-zinc-800 text-zinc-500">
+          <span className="text-[11px] font-sans font-semibold px-2 py-0.5 rounded-full bg-muted text-muted-foreground">
             {sortedTasks.length}
           </span>
         </div>
@@ -133,7 +133,7 @@ export function KanbanColumn({ status, title, onOpenDetails, onAddTask }: Kanban
             size="icon-xs"
             variant="ghost"
             onClick={() => onAddTask(status)}
-            className="text-zinc-400 hover:text-zinc-800 dark:hover:text-zinc-200"
+            className="text-muted-foreground hover:text-foreground"
             id="add-task-btn"
           >
             <Plus className="w-4 h-4" />
@@ -153,9 +153,9 @@ export function KanbanColumn({ status, title, onOpenDetails, onAddTask }: Kanban
             />
           ))
         ) : (
-          <div className="flex flex-col items-center justify-center py-12 border border-dashed border-zinc-200 dark:border-zinc-800 rounded-xl bg-white/40 dark:bg-zinc-900/10 mt-1">
-            <p className="text-xs text-zinc-400">无任务</p>
-            <p className="text-[10px] text-zinc-400 mt-1">拖拽或新建任务到此列</p>
+          <div className="flex flex-col items-center justify-center py-12 border border-dashed border-border rounded-xl bg-card/40 mt-1">
+            <p className="text-xs text-muted-foreground">无任务</p>
+            <p className="text-[10px] text-muted-foreground mt-1">拖拽或新建任务到此列</p>
           </div>
         )}
       </div>
@@ -165,7 +165,7 @@ export function KanbanColumn({ status, title, onOpenDetails, onAddTask }: Kanban
         variant="ghost"
         size="sm"
         onClick={() => onAddTask(status)}
-        className="w-full mt-3 justify-start text-xs font-normal text-zinc-500 dark:text-zinc-400 hover:bg-zinc-100/50 dark:hover:bg-zinc-800/40 hover:text-zinc-800 dark:hover:text-zinc-200 border border-zinc-200/40 border-dashed hover:border-solid hover:shadow-sm"
+        className="w-full mt-3 justify-start text-xs font-normal text-muted-foreground hover:bg-muted/50 hover:text-foreground border border-border border-dashed hover:border-solid hover:shadow-sm"
       >
         <Plus className="w-3.5 h-3.5 mr-1" />
         新建任务...

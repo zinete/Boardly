@@ -154,12 +154,14 @@ export async function initializeDatabaseWithSeedData(): Promise<void> {
     }
   }
 
-  if (!tasksEmpty) {
-    const taskStore = writeTransaction.objectStore('tasks');
-    for (const task of DEFAULT_TASKS) {
-      taskStore.put(task);
-    }
-  }
+
+  // 用于初始化任务数据
+  // if (!tasksEmpty) {
+  //   const taskStore = writeTransaction.objectStore('tasks');
+  //   for (const task of DEFAULT_TASKS) {
+  //     taskStore.put(task);
+  //   }
+  // }
 
   return new Promise((resolve, reject) => {
     writeTransaction.oncomplete = () => resolve();

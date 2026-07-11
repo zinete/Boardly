@@ -26,7 +26,7 @@ export function TaskCard({ task, index, onOpenDetails }: TaskCardProps) {
       case 'medium':
         return <Badge variant="outline" className="bg-amber-50 dark:bg-amber-950/20 text-amber-600 dark:text-amber-400 border-amber-100 dark:border-amber-900/35 text-[10px] font-bold rounded uppercase tracking-wider py-0 px-1.5 h-4.5">Med</Badge>;
       default:
-        return <Badge variant="outline" className="bg-zinc-100 dark:bg-zinc-800 text-zinc-600 dark:text-zinc-400 border-zinc-200 dark:border-zinc-700/60 text-[10px] font-bold rounded uppercase tracking-wider py-0 px-1.5 h-4.5">Low</Badge>;
+        return <Badge variant="outline" className="bg-muted text-muted-foreground border-border text-[10px] font-bold rounded uppercase tracking-wider py-0 px-1.5 h-4.5">Low</Badge>;
     }
   };
 
@@ -37,7 +37,7 @@ export function TaskCard({ task, index, onOpenDetails }: TaskCardProps) {
   const getDueDateDisplay = () => {
     if (!task.dueDate) return null;
     return (
-      <div className={`flex items-center gap-1 text-[11px] mt-1 font-sans ${isOverdue ? 'text-rose-600 font-semibold' : 'text-zinc-450 dark:text-zinc-500'}`}>
+      <div className={`flex items-center gap-1 text-[11px] mt-1 font-sans ${isOverdue ? 'text-rose-600 font-semibold' : 'text-muted-foreground'}`}>
         <Calendar className="w-3.5 h-3.5 opacity-80" />
         <span>{task.dueDate}</span>
         {isOverdue && <span className="text-[10px] bg-rose-50 dark:bg-rose-950/30 text-rose-600 dark:text-rose-400 px-1 rounded border border-rose-100/50 dark:border-rose-900/30">已逾期</span>}
@@ -67,7 +67,7 @@ export function TaskCard({ task, index, onOpenDetails }: TaskCardProps) {
     purple: 'bg-purple-50/60 text-purple-600 hover:bg-purple-50 dark:bg-purple-950/20 dark:text-purple-400 border-purple-100 dark:border-purple-900/30',
     indigo: 'bg-indigo-50/60 text-indigo-600 hover:bg-indigo-50 dark:bg-indigo-950/20 dark:text-indigo-400 border-indigo-100 dark:border-indigo-900/30',
     pink: 'bg-pink-50/60 text-pink-600 hover:bg-pink-50 dark:bg-pink-950/20 dark:text-pink-400 border-pink-100 dark:border-pink-900/30',
-    gray: 'bg-zinc-100 text-zinc-650 hover:bg-zinc-150 dark:bg-zinc-800 dark:text-zinc-400 border-zinc-200/60 dark:border-zinc-700/60',
+    gray: 'bg-zinc-100 text-zinc-600 hover:bg-zinc-200/60 dark:bg-zinc-800 dark:text-zinc-400 border-zinc-200/60 dark:border-zinc-700/60',
   };
 
   return (
@@ -85,10 +85,10 @@ export function TaskCard({ task, index, onOpenDetails }: TaskCardProps) {
         onDragStart={handleDragStart}
         onDragEnd={handleDragEnd}
         onClick={() => onOpenDetails(task.id)}
-        className="cursor-grab hover:shadow-md active:cursor-grabbing border-zinc-200/80 dark:border-zinc-800 hover:border-zinc-300 dark:hover:border-zinc-700 transition-all duration-150 overflow-hidden select-none bg-white dark:bg-zinc-900/90 group rounded-xl"
+        className="cursor-grab hover:shadow-md active:cursor-grabbing border border-border transition-all duration-150 select-none bg-card group rounded-xl"
       >
         {task.images && task.images.length > 0 && (
-          <div className="w-full h-28 overflow-hidden border-b border-zinc-100 dark:border-zinc-800/50">
+          <div className="w-full h-28 overflow-hidden border-b border-border">
             <img
               src={task.images[0]}
               alt="Task cover"
@@ -99,14 +99,14 @@ export function TaskCard({ task, index, onOpenDetails }: TaskCardProps) {
         )}
         <CardContent className="p-4 space-y-3">
           <div className="flex items-start justify-between gap-2">
-            <h4 className="text-[14px] font-medium text-zinc-800 dark:text-zinc-100 line-clamp-2 leading-relaxed group-hover:text-zinc-900 dark:group-hover:text-white transition-colors">
+            <h4 className="text-[14px] font-medium text-foreground line-clamp-2 leading-relaxed transition-colors">
               {task.title}
             </h4>
             <span className="shrink-0">{getPriorityBadge(task.priority)}</span>
           </div>
 
           {task.description && (
-            <p className="text-xs text-zinc-500 dark:text-zinc-400 line-clamp-2 leading-relaxed font-sans">
+            <p className="text-xs text-muted-foreground line-clamp-2 leading-relaxed font-sans">
               {task.description}
             </p>
           )}
@@ -127,13 +127,13 @@ export function TaskCard({ task, index, onOpenDetails }: TaskCardProps) {
           )}
 
           {/* Footer Meta Row */}
-          <div className="flex items-center justify-between pt-3 border-t border-zinc-100 dark:border-zinc-800/60 mt-1">
+          <div className="flex items-center justify-between pt-3 border-t border-border mt-1">
             {getDueDateDisplay() || <div />}
             
-            <div className="flex items-center gap-2 text-zinc-400 dark:text-zinc-650">
+            <div className="flex items-center gap-2 text-muted-foreground">
               {task.linkedTaskIds && task.linkedTaskIds.length > 0 && (
-                <div className="flex items-center gap-0.5 text-[10px] bg-zinc-50 dark:bg-zinc-800/40 text-zinc-500 dark:text-zinc-400 hover:text-zinc-600 px-1.5 py-0.5 rounded transition-colors border border-zinc-150 dark:border-zinc-800/80">
-                  <Link2 className="w-3 h-3 text-zinc-400" />
+                <div className="flex items-center gap-0.5 text-[10px] bg-muted text-muted-foreground hover:text-foreground px-1.5 py-0.5 rounded transition-colors border border-border">
+                  <Link2 className="w-3 h-3 text-muted-foreground" />
                   <span className="font-mono">{task.linkedTaskIds.length}</span>
                 </div>
               )}
