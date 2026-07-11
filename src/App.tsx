@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import 'overlayscrollbars/overlayscrollbars.css';
-import { useKanbanStore, getAiEnabled, setAiEnabled } from './lib/store';
+import { useKanbanStore, getAiEnabled, setAiEnabled } from './store/useKanbanStore';
 import { useTheme } from './lib/ThemeContext';
 import { KanbanColumn } from './components/KanbanColumn';
 import { LabelManager } from './components/LabelManager';

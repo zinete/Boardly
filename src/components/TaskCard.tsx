@@ -1,6 +1,6 @@
 import React from 'react';
 import { Task, Label } from '../types';
-import { useKanbanStore } from '../lib/store';
+import { useKanbanStore } from '../store/useKanbanStore';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Calendar, AlertCircle, Link2, CheckSquare } from 'lucide-react';

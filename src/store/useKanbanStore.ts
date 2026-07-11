@@ -13,7 +13,7 @@ import {
   getSmartLabels,
   saveSmartLabel,
   deleteSmartLabel,
-} from './db';
+} from '../lib/db';
 
 interface KanbanStore {
   tasks: Task[];

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useKanbanStore, useHasAiKey } from '../lib/store';
+import { useKanbanStore, useHasAiKey } from '../store/useKanbanStore';
 import { Task, TaskPriority, TaskStatus } from '../types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

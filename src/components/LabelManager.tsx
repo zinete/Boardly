@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useKanbanStore } from '../lib/store';
+import { useKanbanStore } from '../store/useKanbanStore';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';

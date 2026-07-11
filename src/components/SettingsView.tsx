@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useMemo } from "react";
 import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import 'overlayscrollbars/overlayscrollbars.css';
-import { useKanbanStore, getAiEnabled, setAiEnabled } from "../lib/store";
+import { useKanbanStore, getAiEnabled, setAiEnabled } from "../store/useKanbanStore";
 import { useTheme } from "../lib/ThemeContext";
 import { openDB } from "../lib/db";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";

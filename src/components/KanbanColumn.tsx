@@ -3,7 +3,7 @@ import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
 import 'overlayscrollbars/overlayscrollbars.css';
 import { Task, TaskStatus } from '../types';
 import { TaskCard } from './TaskCard';
-import { useKanbanStore, taskMatchesSmartLabel } from '../lib/store';
+import { useKanbanStore, taskMatchesSmartLabel } from '../store/useKanbanStore';
 import { useTheme } from '../lib/ThemeContext';
 import { Plus, CheckCircle2, Circle, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
