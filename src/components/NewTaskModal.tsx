@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useKanbanStore } from '../lib/store';
+import { useKanbanStore, useHasAiKey } from '../lib/store';
 import { TaskPriority, TaskStatus } from '../types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -23,7 +23,8 @@ import {
   Eye,
   Edit3,
   Trash2,
-  Check
+  Check,
+  Settings
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { renderMarkdownToHtml, insertMarkdown } from '../lib/richText';
@@ -32,10 +33,12 @@ interface NewTaskModalProps {
   isOpen: boolean;
   onClose: () => void;
   defaultStatus: TaskStatus;
+  onOpenSettings?: () => void;
 }
 
-export function NewTaskModal({ isOpen, onClose, defaultStatus }: NewTaskModalProps) {
+export function NewTaskModal({ isOpen, onClose, defaultStatus, onOpenSettings }: NewTaskModalProps) {
   const { labels, addTask } = useKanbanStore();
+  const hasAiKey = useHasAiKey();
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   // Form states
@@ -263,6 +266,7 @@ export function NewTaskModal({ isOpen, onClose, defaultStatus }: NewTaskModalPro
             {/* Content Scroll Area */}
             <div className="flex-1 overflow-y-auto p-6 space-y-5">
               {/* AI Quick Draft Assist Banner — full width, unique to NewTaskModal */}
+              {hasAiKey && (
               <div className="border border-indigo-100 dark:border-indigo-900/50 bg-indigo-50/20 dark:bg-indigo-950/10 rounded-xl p-4 space-y-2">
                 <div className="flex items-center gap-1.5 text-xs font-semibold text-indigo-700 dark:text-indigo-400 uppercase tracking-wider">
                   <Sparkles className="w-4 h-4 text-indigo-500 animate-pulse" />
@@ -302,6 +306,23 @@ export function NewTaskModal({ isOpen, onClose, defaultStatus }: NewTaskModalPro
                   </p>
                 )}
               </div>
+              )}
+              {!hasAiKey && (
+              <div className="flex items-center gap-2 text-[11px] text-muted-foreground px-1">
+                <Sparkles className="w-3.5 h-3.5 text-muted-foreground/60" />
+                <span>AI 智能起草未启用</span>
+                {onOpenSettings && (
+                  <button
+                    type="button"
+                    onClick={onOpenSettings}
+                    className="flex items-center gap-1 text-indigo-600 dark:text-indigo-400 hover:underline font-medium cursor-pointer"
+                  >
+                    <Settings className="w-3 h-3" />
+                    前往设置配置 API Key
+                  </button>
+                )}
+              </div>
+              )}
 
               {/* Two-Column Layout: content left, metadata sidebar right */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

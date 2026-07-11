@@ -121,6 +121,7 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    box-sizing: border-box;
     }
   body {
     @apply bg-background text-foreground;
@@ -128,4 +129,15 @@
   html {
     @apply font-sans;
     }
+}
+
+/* OverlayScrollbars custom styling */
+.os-scrollbar .os-scrollbar-handle {
+  border-radius: 9999px;
+}
+.os-scrollbar-vertical {
+  width: 6px;
+}
+.os-scrollbar-horizontal {
+  height: 6px;
 }

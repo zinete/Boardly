@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useKanbanStore } from '../lib/store';
+import { useKanbanStore, useHasAiKey } from '../lib/store';
 import { Task, TaskPriority, TaskStatus } from '../types';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -42,6 +42,7 @@ interface TaskDetailModalProps {
 
 export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetailModalProps) {
   const { tasks, labels, updateTask, deleteTask } = useKanbanStore();
+  const hasAiKey = useHasAiKey();
 
   const task = tasks.find((t) => t.id === taskId);
 
@@ -395,6 +396,7 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                       </div>
                       
                       {/* AI Assistant Button */}
+                      {hasAiKey && (
                       <Button
                         onClick={runAiAnalysis}
                         disabled={aiLoading}
@@ -414,6 +416,7 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                           </>
                         )}
                       </Button>
+                      )}
                     </div>
 
                     {descriptionTab === 'edit' ? (
@@ -596,7 +599,7 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                   </div>
 
                   {/* AI Suggestion Box */}
-                  {aiResult && (
+                  {hasAiKey && aiResult && (
                     <div className="border border-indigo-100 dark:border-indigo-900/50 bg-indigo-50/20 dark:bg-indigo-950/10 rounded-xl p-4 space-y-3 animate-fade-in">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-1.5 text-indigo-700 dark:text-indigo-400 font-medium text-xs uppercase tracking-wider">
@@ -653,7 +656,7 @@ export function TaskDetailModal({ taskId, onClose, onNavigateToTask }: TaskDetai
                     </div>
                   )}
 
-                  {aiError && (
+                  {hasAiKey && aiError && (
                     <div className="p-3 border border-red-200 bg-red-50/30 text-red-600 text-xs rounded-lg">
                       {aiError}
                     </div>

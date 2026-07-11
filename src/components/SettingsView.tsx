@@ -1,5 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useKanbanStore } from "../lib/store";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
+import 'overlayscrollbars/overlayscrollbars.css';
+import { useKanbanStore, getAiEnabled, setAiEnabled } from "../lib/store";
 import { useTheme } from "../lib/ThemeContext";
 import { openDB } from "../lib/db";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -10,8 +12,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Settings, Database, Download, Upload, Trash2, RotateCcw, AlertTriangle, CheckCircle2, Loader2, FileJson, X, HardDrive, LayoutDashboard, Info, Sparkles, Check, Palette } from "lucide-react";
 interface SettingsViewProps { onBackToBoard: () => void; }
 export function SettingsView({ onBackToBoard }: SettingsViewProps) {
-  const { tasks, labels, smartLabels, initStore } = useKanbanStore();
+  const { tasks, labels, smartLabels, initStore, restoreDemoData } = useKanbanStore();
   const { currentTheme, setTheme, themes } = useTheme();
+  const scrollbarOptions = useMemo(() => ({
+    scrollbars: {
+      autoHide: 'scroll' as const,
+      theme: currentTheme.isDark ? 'os-theme-light' : 'os-theme-dark',
+    },
+  }), [currentTheme.isDark]);
   const [storageBytes, setStorageBytes] = useState(0);
   const [quotaUsed, setQuotaUsed] = useState("0%");
   const [aiProvider, setAiProvider] = useState("gemini");
@@ -20,6 +28,7 @@ export function SettingsView({ onBackToBoard }: SettingsViewProps) {
   const [customUrl, setCustomUrl] = useState("");
   const [customModel, setCustomModel] = useState("gemini-3.5-flash");
   const [customInstruction, setCustomInstruction] = useState("");
+  const [aiEnabled, setAiEnabledState] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [isImportModalOpen, setIsImportModalOpen] = useState(false);
   const [importError, setImportError] = useState<string | null>(null);
@@ -38,9 +47,11 @@ export function SettingsView({ onBackToBoard }: SettingsViewProps) {
     setCustomApiKey(localStorage.getItem("taskflow_ai_custom_key") || "");
     setCustomUrl(localStorage.getItem("taskflow_ai_custom_url") || "");
     setCustomInstruction(localStorage.getItem("taskflow_ai_custom_instruction") || "");
+    setAiEnabledState(getAiEnabled());
     const sm = localStorage.getItem("taskflow_ai_model") || "";
     setCustomModel(sm || (sp==="gemini"?"gemini-3.5-flash":sp==="openai"?"gpt-4o-mini":sp==="deepseek"?"deepseek-chat":sp==="anthropic"?"claude-3-5-sonnet-latest":"gpt-4o-mini"));
   }, []);
+  const handleToggleAi = (enabled: boolean) => { setAiEnabledState(enabled); setAiEnabled(enabled); };
   const handleProviderChange = (p: string) => { setAiProvider(p); setCustomModel(p==="gemini"?"gemini-3.5-flash":p==="openai"?"gpt-4o-mini":p==="deepseek"?"deepseek-chat":p==="anthropic"?"claude-3-5-sonnet-latest":"gpt-4o-mini"); setCustomUrl(p==="deepseek"?"https://api.deepseek.com":""); };
   const handleSaveAiConfig = () => { localStorage.setItem("taskflow_ai_provider",aiProvider); localStorage.setItem("taskflow_ai_use_custom_key",String(useCustomKey)); localStorage.setItem("taskflow_ai_custom_key",customApiKey.trim()); localStorage.setItem("taskflow_ai_custom_url",customUrl.trim()); localStorage.setItem("taskflow_ai_model",customModel); localStorage.setItem("taskflow_ai_custom_instruction",customInstruction.trim()); setSaveSuccess(true); setTimeout(()=>setSaveSuccess(false),2500); };
   const handleTestAiConnection = async () => { setIsTestingAi(true); setTestResult(null); try { const r=await fetch("/api/test-ai",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({provider:aiProvider,customApiKey:useCustomKey||aiProvider!=="gemini"?customApiKey.trim():"",customUrl:customUrl.trim(),customModel})}); const d=await r.json(); if(r.ok&&d.success)setTestResult({success:true,message:d.message||"连接测试成功！",response:d.response}); else setTestResult({success:false,message:d.error||d.message||"连接测试失败。请检查密钥和配置。"}); }catch(e:any){setTestResult({success:false,message:e.message||"网络请求错误"});}finally{setIsTestingAi(false);} };
@@ -50,7 +61,7 @@ export function SettingsView({ onBackToBoard }: SettingsViewProps) {
   const handleFileChange = (e:React.ChangeEvent<HTMLInputElement>) => { const f=e.target.files?.[0]; if(!f)return; setImportError(null);setImportSuccess(null);setImportPreview(null); const r=new FileReader(); r.onload=(ev)=>{try{const p=JSON.parse(ev.target?.result as string);const t=Array.isArray(p.tasks)?p.tasks:[];const l=Array.isArray(p.labels)?p.labels:[];const sl=Array.isArray(p.smartLabels)?p.smartLabels:[];if(!t.length&&!l.length&&!sl.length){setImportError("导入的文件中未检测到有效的任务、标签或智能标签数据。");setIsImportModalOpen(true);return;}setImportPreview({tasks:t,labels:l,smartLabels:sl,fileName:f.name,fileSize:formatBytes(f.size)});setIsImportModalOpen(true);}catch{setImportError("无法解析该文件");setIsImportModalOpen(true);}}; r.readAsText(f); };
   const clearStores = async (db:any) => { await new Promise<void>((res,rej)=>{const tr=db.transaction(["tasks","labels","smartLabels"],"readwrite");tr.objectStore("tasks").clear();tr.objectStore("labels").clear();tr.objectStore("smartLabels").clear();tr.oncomplete=()=>res();tr.onerror=()=>rej(tr.error);}); };
   const executeImport = async (mode:"merge"|"overwrite") => { if(!importPreview)return; setIsProcessingImport(true);setImportError(null);setImportSuccess(null); try{const db=await openDB();if(mode==="overwrite")await clearStores(db); await new Promise<void>((res,rej)=>{const tr=db.transaction(["tasks","labels","smartLabels"],"readwrite");importPreview!.tasks.forEach((t:any)=>tr.objectStore("tasks").put(t));importPreview!.labels.forEach((l:any)=>tr.objectStore("labels").put(l));importPreview!.smartLabels.forEach((s:any)=>tr.objectStore("smartLabels").put(s));tr.oncomplete=()=>res();tr.onerror=()=>rej(tr.error);}); await initStore(); setImportSuccess(`成功${mode==="overwrite"?"清空并导入":"合并导入"}了 ${importPreview.tasks.length} 个任务、${importPreview.labels.length} 个标签和 ${importPreview.smartLabels.length} 个智能标签！`); setImportPreview(null);if(fileInputRef.current)fileInputRef.current.value="";}catch(e){console.error(e);setImportError("导入失败");}finally{setIsProcessingImport(false);} };
-  const handleResetToSeeds = async () => { setIsProcessingImport(true); try{const db=await openDB();await clearStores(db);await initStore();setImportSuccess("已重置数据库并重新加载初始种子数据！");setIsImportModalOpen(true);setIsConfirmingReset(false);}catch{setImportError("恢复出厂设置失败");setIsImportModalOpen(true);}finally{setIsProcessingImport(false);} };
+  const handleResetToSeeds = async () => { setIsProcessingImport(true); try{await restoreDemoData();setImportSuccess("已重置数据库并重新加载初始演示数据（3 个任务 + 4 个标签 + 4 个智能标签）！");setIsImportModalOpen(true);setIsConfirmingReset(false);}catch{setImportError("恢复演示数据失败");setIsImportModalOpen(true);}finally{setIsProcessingImport(false);} };
   const handleClearAll = async () => { setIsProcessingImport(true); try{const db=await openDB();await clearStores(db);await initStore();setImportSuccess("已清空数据库中的所有任务和标签！");setIsImportModalOpen(true);setIsConfirmingClear(false);}catch{setImportError("清空失败");setIsImportModalOpen(true);}finally{setIsProcessingImport(false);} };
   const labelCls = "text-[11px] font-bold text-muted-foreground uppercase tracking-wider block";
   const inputCls = "h-9.5 text-xs bg-card border-border rounded-lg focus-visible:ring-1";
@@ -58,12 +69,18 @@ export function SettingsView({ onBackToBoard }: SettingsViewProps) {
   const selectContentCls = "bg-card text-xs border border-border rounded-lg";
   const isCustomProvider = aiProvider === "deepseek" || aiProvider === "custom";
   return (
-    <div className="flex-1 flex flex-col md:h-screen md:overflow-hidden animate-fade-in bg-muted/20">
+    <div className="flex-1 flex flex-col min-w-0 md:h-screen md:overflow-hidden animate-fade-in bg-muted/20">
       <header className="h-16 border-b border-border/80 flex items-center justify-between px-6 bg-card shrink-0">
         <div className="flex items-center gap-2"><Settings className="w-4.5 h-4.5 text-muted-foreground" /><div><h2 className="text-sm font-semibold text-foreground tracking-tight flex items-center gap-1.5">系统设置 (System Settings)</h2><p className="text-[10px] text-muted-foreground font-sans">管理本地存储、数据导入导出、备份以及进行系统清理维护</p></div></div>
         <Button onClick={onBackToBoard} size="sm" variant="outline" className="h-9 px-4 rounded-xl flex items-center gap-1.5 font-medium text-xs border-border hover:bg-muted transition-colors cursor-pointer"><LayoutDashboard className="w-3.5 h-3.5" />返回研发看板</Button>
       </header>
-      <div className="flex-1 overflow-y-auto p-6 space-y-6 max-w-4xl mx-full w-full">
+      <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
+      <OverlayScrollbarsComponent
+        options={scrollbarOptions}
+        className="flex-1 min-h-0"
+        defer
+      >
+        <div className="p-6 space-y-6 max-w-4xl mx-full w-full">
         {/* Theme */}
         <div className="bg-card border border-border/80 rounded-2xl p-5 shadow-sm space-y-4">
           <div className="flex items-center gap-2"><div className="w-9 h-9 rounded-xl bg-violet-50 dark:bg-violet-950/20 flex items-center justify-center text-violet-600 dark:text-violet-400"><Palette className="w-4.5 h-4.5" /></div><div><h3 className="text-sm font-semibold text-foreground">外观</h3><p className="text-[10px] text-muted-foreground">选择你喜欢的主题配色</p></div></div>
@@ -91,7 +108,23 @@ export function SettingsView({ onBackToBoard }: SettingsViewProps) {
         {/* AI */}
         <div className="bg-card border border-border/80 rounded-2xl p-5 shadow-sm space-y-4">
           <div className="flex items-center gap-2"><div className="w-9 h-9 rounded-xl bg-indigo-50 dark:bg-indigo-950/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400"><Sparkles className="w-4.5 h-4.5" /></div><div><h3 className="text-sm font-semibold text-foreground">AI 智能助理配置 (AI Settings)</h3><p className="text-[10px] text-muted-foreground">支持 Gemini、OpenAI、DeepSeek、Anthropic 及自定义兼容接口</p></div></div>
-          <div className="space-y-4 pt-1">
+          {/* AI Enable/Disable Toggle */}
+          <div className="flex items-center justify-between p-3.5 border border-border/80 rounded-xl bg-muted/20">
+            <div className="space-y-0.5">
+              <label className="text-xs font-semibold text-foreground flex items-center gap-2">AI 功能</label>
+              <p className="text-[10px] text-muted-foreground leading-relaxed">{aiEnabled ? 'AI 智能辅助功能已启用，可在任务编辑中使用 AI 生成描述、智能标签等功能。' : 'AI 智能辅助功能已禁用。启用后即可在任务编辑中使用 AI 相关功能。'}</p>
+            </div>
+            <button
+              type="button"
+              role="switch"
+              aria-checked={aiEnabled}
+              onClick={() => handleToggleAi(!aiEnabled)}
+              className={`relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background ${aiEnabled ? 'bg-indigo-500 dark:bg-indigo-400' : 'bg-muted-foreground/25'}`}
+            >
+              <span className={`pointer-events-none inline-block h-5 w-5 rounded-full bg-primary-foreground shadow-lg ring-0 transition-transform duration-200 ease-in-out ${aiEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
+            </button>
+          </div>
+          {aiEnabled && <div className="space-y-4 pt-1">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-1">
               <div className="space-y-1.5"><label className={labelCls}>AI 服务商</label><Select value={aiProvider} onValueChange={v=>handleProviderChange(v)}><SelectTrigger className={selectTriggerCls}><SelectValue placeholder="选择 AI 服务商" /></SelectTrigger><SelectContent className={selectContentCls}><SelectItem value="gemini">Google Gemini API</SelectItem><SelectItem value="openai">OpenAI API</SelectItem><SelectItem value="deepseek">DeepSeek (深度求索)</SelectItem><SelectItem value="anthropic">Anthropic Claude</SelectItem><SelectItem value="custom">Custom (自定义)</SelectItem></SelectContent></Select></div>
               {isCustomProvider ? <div className="space-y-1.5 animate-fade-in"><label className={labelCls}>API Base URL</label><Input type="text" placeholder={aiProvider==="deepseek"?"https://api.deepseek.com":"https://api.yourproxy.com/v1"} value={customUrl} onChange={e=>setCustomUrl(e.target.value)} className={inputCls} /></div> : <div className="space-y-1.5"><label className={labelCls}>运行状态</label><div className="h-9.5 rounded-lg border border-border/80 bg-muted/50 px-3 flex items-center justify-between text-xs text-muted-foreground font-medium select-none"><span className="flex items-center gap-1.5"><span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />引擎就绪 ({aiProvider.toUpperCase()})</span><span className="text-[10px] text-muted-foreground">V1.4 / JSON</span></div></div>}
@@ -110,7 +143,7 @@ export function SettingsView({ onBackToBoard }: SettingsViewProps) {
                 <Button onClick={handleSaveAiConfig} className="text-xs font-semibold h-9 px-5 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl flex items-center gap-1.5 cursor-pointer">保存 AI 配置</Button>
               </div>
             </div>
-          </div>
+          </div>}
         </div>
         {/* Danger Zone */}
         <div className="bg-card border border-border/80 rounded-2xl p-5 shadow-sm space-y-4">
@@ -120,6 +153,8 @@ export function SettingsView({ onBackToBoard }: SettingsViewProps) {
             <div className="flex flex-col md:flex-row md:items-center justify-between border border-rose-150/50 dark:border-rose-950/40 p-4 rounded-xl gap-4 bg-rose-50/10 dark:bg-rose-950/10"><div className="space-y-0.5 flex-1"><h4 className="text-xs font-semibold text-foreground flex items-center gap-1.5"><Trash2 className="w-3.5 h-3.5 text-muted-foreground" />彻底清空本地 IndexedDB</h4><p className="text-[10px] text-muted-foreground leading-relaxed">清空所有项目任务、自定义标签及智能筛选机制，彻底抹除本地存储。</p></div>{isConfirmingClear?<div className="flex items-center gap-2 animate-fade-in shrink-0"><Button variant="destructive" size="sm" onClick={handleClearAll} className="font-semibold text-xs h-8.5 px-3.5">确认清空</Button><Button variant="outline" size="sm" onClick={()=>setIsConfirmingClear(false)} className="font-semibold text-xs h-8.5 px-3.5 border-border">取消</Button></div>:<Button variant="destructive" size="sm" onClick={()=>{setIsConfirmingClear(true);setIsConfirmingReset(false);}} className="text-xs font-semibold h-8.5 shrink-0">清空所有数据</Button>}</div>
           </div>
         </div>
+        </div>
+      </OverlayScrollbarsComponent>
       </div>
       {/* Import Dialog */}
       <Dialog open={isImportModalOpen} onOpenChange={setIsImportModalOpen}>

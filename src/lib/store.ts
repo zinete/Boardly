@@ -1,7 +1,9 @@
 import { create } from 'zustand';
+import { useState, useEffect } from 'react';
 import { Task, Label, SmartLabel, TaskStatus, TaskPriority, Rule } from '../types';
 import {
   initializeDatabaseWithSeedData,
+  restoreDemoData as restoreDemoDataDB,
   getTasks,
   saveTask,
   deleteTask,
@@ -50,6 +52,9 @@ interface KanbanStore {
   setSelectedSmartLabelId: (id: string | null) => void;
   setSelectedLabelId: (id: string | null) => void;
   setSearchQuery: (query: string) => void;
+
+  // Restore demo data
+  restoreDemoData: () => Promise<void>;
 }
 
 // Evaluate whether a task matches a specific smart label
@@ -99,6 +104,55 @@ export function taskMatchesSmartLabel(task: Task, smartLabel: SmartLabel): boole
         return true;
     }
   });
+}
+
+/**
+ * Get the current AI enabled state from localStorage.
+ * Default: false (disabled) when the key does not exist.
+ */
+export function getAiEnabled(): boolean {
+  if (typeof window === 'undefined') return false;
+  return localStorage.getItem('boardly-ai-enabled') === 'true';
+}
+
+/** Set the AI enabled/disabled flag in localStorage. */
+export function setAiEnabled(enabled: boolean): void {
+  localStorage.setItem('boardly-ai-enabled', String(enabled));
+}
+
+/**
+ * Check if AI features should be active.
+ * Returns true only when BOTH conditions are met:
+ *  1. AI is explicitly enabled via the `boardly-ai-enabled` toggle (default: false)
+ *  2. At least one provider has a non-empty API key configured
+ */
+export function checkHasAiKey(): boolean {
+  if (typeof window === 'undefined') return false;
+  if (!getAiEnabled()) return false;
+  const provider = localStorage.getItem('taskflow_ai_provider') || 'gemini';
+  const useCustomKey = localStorage.getItem('taskflow_ai_use_custom_key') === 'true';
+  const customKey = localStorage.getItem('taskflow_ai_custom_key') || '';
+  if (provider === 'gemini') return useCustomKey && customKey.trim().length > 0;
+  return customKey.trim().length > 0;
+}
+
+/** React hook that reactively tracks whether an AI key is configured.
+ *  Polls every 500 ms so it picks up same-tab localStorage writes immediately. */
+export function useHasAiKey(): boolean {
+  const [hasKey, setHasKey] = useState(checkHasAiKey);
+  useEffect(() => {
+    const update = () => setHasKey(checkHasAiKey());
+    update();
+    const id = setInterval(update, 500);
+    window.addEventListener('storage', update);
+    window.addEventListener('focus', update);
+    return () => {
+      clearInterval(id);
+      window.removeEventListener('storage', update);
+      window.removeEventListener('focus', update);
+    };
+  }, []);
+  return hasKey;
 }
 
 export const useKanbanStore = create<KanbanStore>((set, get) => ({
@@ -315,5 +369,24 @@ export const useKanbanStore = create<KanbanStore>((set, get) => ({
 
   setSearchQuery: (query) => {
     set({ searchQuery: query });
+  },
+
+  restoreDemoData: async () => {
+    set({ isLoading: true });
+    try {
+      await restoreDemoDataDB();
+      const tasks = await getTasks();
+      const labels = await getLabels();
+      const smartLabels = await getSmartLabels();
+      set({
+        tasks: tasks.sort((a, b) => a.order - b.order),
+        labels,
+        smartLabels,
+        isLoading: false,
+      });
+    } catch (error) {
+      console.error('Failed to restore demo data:', error);
+      set({ isLoading: false });
+    }
   },
 }));

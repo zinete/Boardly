@@ -1,7 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
+import 'overlayscrollbars/overlayscrollbars.css';
 import { Task, TaskStatus } from '../types';
 import { TaskCard } from './TaskCard';
 import { useKanbanStore, taskMatchesSmartLabel } from '../lib/store';
+import { useTheme } from '../lib/ThemeContext';
 import { Plus, CheckCircle2, Circle, Clock } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
@@ -14,7 +17,15 @@ interface KanbanColumnProps {
 
 export function KanbanColumn({ status, title, onOpenDetails, onAddTask }: KanbanColumnProps) {
   const { tasks, smartLabels, selectedSmartLabelId, selectedLabelId, searchQuery, moveTask } = useKanbanStore();
+  const { currentTheme } = useTheme();
   const [isOver, setIsOver] = useState(false);
+
+  const scrollbarOptions = useMemo(() => ({
+    scrollbars: {
+      autoHide: 'scroll' as const,
+      theme: currentTheme.isDark ? 'os-theme-light' : 'os-theme-dark',
+    },
+  }), [currentTheme.isDark]);
 
   // Filter tasks belonging to this column based on active filters
   const filteredTasks = tasks.filter((task) => {
@@ -110,7 +121,7 @@ export function KanbanColumn({ status, title, onOpenDetails, onAddTask }: Kanban
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
-      className={`flex flex-col h-full rounded-2xl p-4 border transition-colors duration-200 w-full min-w-[280px] bg-muted/50 ${
+      className={`flex flex-col rounded-2xl p-4 border transition-colors duration-200 w-[340px] min-w-[340px] flex-shrink-0 overflow-hidden bg-muted/50 ${
         isOver
           ? 'border-border bg-muted/80 shadow-inner'
           : 'border-border'
@@ -142,7 +153,13 @@ export function KanbanColumn({ status, title, onOpenDetails, onAddTask }: Kanban
       </div>
 
       {/* Cards List */}
-      <div className="flex-1 overflow-y-auto min-h-[300px] scrollbar-thin scrollbar-thumb-zinc-200 pr-1 select-none">
+      <div className="flex-1 min-h-[300px] h-full overflow-hidden flex flex-col">
+      <OverlayScrollbarsComponent
+        options={scrollbarOptions}
+        className="flex-1 min-h-0"
+        defer
+      >
+        <div className="pr-1 select-none">
         {sortedTasks.length > 0 ? (
           sortedTasks.map((task, idx) => (
             <TaskCard
@@ -158,6 +175,8 @@ export function KanbanColumn({ status, title, onOpenDetails, onAddTask }: Kanban
             <p className="text-[10px] text-muted-foreground mt-1">拖拽或新建任务到此列</p>
           </div>
         )}
+        </div>
+      </OverlayScrollbarsComponent>
       </div>
 
       {/* Quick bottom add task button */}

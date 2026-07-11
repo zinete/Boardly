@@ -32,14 +32,14 @@ export function openDB(): Promise<IDBDatabase> {
 }
 
 // Default Seed Data
-const DEFAULT_LABELS: Label[] = [
+export const DEFAULT_LABELS: Label[] = [
   { id: 'lbl-work', name: '工作 (Work)', color: 'blue' },
   { id: 'lbl-personal', name: '个人 (Personal)', color: 'emerald' },
   { id: 'lbl-shopping', name: '购物 (Shopping)', color: 'amber' },
   { id: 'lbl-urgent', name: '紧急 (Urgent)', color: 'red' },
 ];
 
-const DEFAULT_SMART_LABELS: SmartLabel[] = [
+export const DEFAULT_SMART_LABELS: SmartLabel[] = [
   {
     id: 'smart-today',
     name: '今日待办',
@@ -81,7 +81,7 @@ const DEFAULT_SMART_LABELS: SmartLabel[] = [
   }
 ];
 
-const DEFAULT_TASKS: Task[] = [
+export const DEFAULT_TASKS: Task[] = [
   {
     id: 'task-1',
     title: '设计任务看板系统',
@@ -119,6 +119,39 @@ const DEFAULT_TASKS: Task[] = [
     linkedTaskIds: []
   }
 ];
+
+export async function restoreDemoData(): Promise<void> {
+  const db = await openDB();
+  const transaction = db.transaction(['tasks', 'labels', 'smartLabels'], 'readwrite');
+
+  // Clear all stores
+  transaction.objectStore('tasks').clear();
+  transaction.objectStore('labels').clear();
+  transaction.objectStore('smartLabels').clear();
+
+  // Write default labels
+  const labelStore = transaction.objectStore('labels');
+  for (const label of DEFAULT_LABELS) {
+    labelStore.put(label);
+  }
+
+  // Write default smart labels
+  const smartLabelStore = transaction.objectStore('smartLabels');
+  for (const smart of DEFAULT_SMART_LABELS) {
+    smartLabelStore.put(smart);
+  }
+
+  // Write default tasks
+  const taskStore = transaction.objectStore('tasks');
+  for (const task of DEFAULT_TASKS) {
+    taskStore.put(task);
+  }
+
+  return new Promise((resolve, reject) => {
+    transaction.oncomplete = () => resolve();
+    transaction.onerror = () => reject(transaction.error);
+  });
+}
 
 export async function initializeDatabaseWithSeedData(): Promise<void> {
   const db = await openDB();

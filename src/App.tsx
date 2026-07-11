@@ -1,5 +1,8 @@
-import React, { useEffect, useState } from 'react';
-import { useKanbanStore } from './lib/store';
+import React, { useEffect, useState, useMemo } from 'react';
+import { OverlayScrollbarsComponent } from 'overlayscrollbars-react';
+import 'overlayscrollbars/overlayscrollbars.css';
+import { useKanbanStore, getAiEnabled, setAiEnabled } from './lib/store';
+import { useTheme } from './lib/ThemeContext';
 import { KanbanColumn } from './components/KanbanColumn';
 import { LabelManager } from './components/LabelManager';
 import { SmartLabelManager } from './components/SmartLabelManager';
@@ -26,6 +29,14 @@ import { Badge } from '@/components/ui/badge';
 import ShinyText from './components/ShinyText';
 
 export default function App() {
+  const { currentTheme } = useTheme();
+  const scrollbarOptions = useMemo(() => ({
+    scrollbars: {
+      autoHide: 'scroll' as const,
+      theme: currentTheme.isDark ? 'os-theme-light' : 'os-theme-dark',
+    },
+  }), [currentTheme.isDark]);
+
   const {
     tasks,
     labels,
@@ -41,6 +52,20 @@ export default function App() {
   } = useKanbanStore();
 
   // Modals state
+  const [aiEnabled, setAiEnabledState] = useState(getAiEnabled);
+  useEffect(() => {
+    const sync = () => setAiEnabledState(getAiEnabled());
+    sync();
+    const id = setInterval(sync, 500);
+    window.addEventListener('storage', sync);
+    window.addEventListener('focus', sync);
+    return () => { clearInterval(id); window.removeEventListener('storage', sync); window.removeEventListener('focus', sync); };
+  }, []);
+  const handleToggleAi = () => {
+    const next = !aiEnabled;
+    setAiEnabledState(next);
+    setAiEnabled(next);
+  };
   const [activeView, setActiveView] = useState<'board' | 'settings'>('board');
   const [editingTaskId, setEditingTaskId] = useState<string | null>(null);
   const [isNewTaskOpen, setIsNewTaskOpen] = useState(false);
@@ -124,8 +149,13 @@ export default function App() {
         </div>
 
         {/* Scrollable Filters Content */}
-        <div className="flex-1 overflow-y-auto p-4.5 space-y-6">
-          
+        <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
+        <OverlayScrollbarsComponent
+          options={scrollbarOptions}
+          className="flex-1 min-h-0"
+          defer
+        >
+          <div className="p-4.5 space-y-6">
           {/* View Switcher Tabs */}
           <div className="space-y-1.5">
             <label className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest block">系统导航</label>
@@ -139,7 +169,7 @@ export default function App() {
                 }`}
               >
                 <LayoutDashboard className="w-3.5 h-3.5" />
-                <span>研发看板</span>
+                <span>任务看板</span>
               </button>
               <button
                 onClick={() => setActiveView('settings')}
@@ -264,6 +294,8 @@ export default function App() {
               重置所有筛选器
             </Button>
           )}
+          </div>
+        </OverlayScrollbarsComponent>
         </div>
 
         {/* Sync Status Badge Box at bottom of Sidebar */}
@@ -293,7 +325,7 @@ export default function App() {
           <header className="h-16 border-b border-border flex items-center justify-between px-6 bg-card shrink-0">
             <div>
               <h2 className="text-sm font-semibold text-foreground tracking-tight flex items-center gap-2">
-                研发看板工作流 (Board)
+                任务看板工作流 (Board)
               </h2>
               <p className="text-[10px] text-muted-foreground font-sans">本地 IndexedDB 持久化存储与拖拽排序</p>
             </div>
@@ -310,12 +342,42 @@ export default function App() {
             </div>
           </header>
 
-          {/* Kanban Area Wrapper */}
-          <div className="flex-1 overflow-y-auto p-6 bg-background space-y-4">
-            
+          {/* AI Status Bar */}
+          {aiEnabled && (
+            <div className="flex items-center justify-between px-6 py-2 bg-indigo-50/60 dark:bg-indigo-950/15 border-b border-border/60 shrink-0">
+              <div className="flex items-center gap-2">
+                <Sparkles className="w-3.5 h-3.5 text-indigo-500 dark:text-indigo-400" />
+                <span className="text-xs text-foreground font-medium flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  AI 功能已启用
+                </span>
+                <span className="text-[10px] text-muted-foreground hidden sm:inline">— AI 智能辅助可在任务编辑中使用</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setActiveView('settings')}
+                  className="text-[10px] text-indigo-500 dark:text-indigo-400 hover:underline font-semibold cursor-pointer"
+                >
+                  AI 设置
+                </button>
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={aiEnabled}
+                  onClick={handleToggleAi}
+                  className="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background bg-indigo-500 dark:bg-indigo-400"
+                >
+                  <span className="pointer-events-none inline-block h-4 w-4 rounded-full bg-primary-foreground shadow-lg ring-0 transition-transform duration-200 ease-in-out translate-x-4" />
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Kanban Area - fills remaining height */}
+          <div className="flex-1 min-h-0 bg-background p-6 flex flex-col">
             {/* Active Filter Bar Banner */}
             {getActiveFilterText() && (
-              <div className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-muted/50 border border-border text-xs text-foreground animate-fade-in">
+              <div className="flex items-center justify-between px-4 py-2.5 rounded-xl bg-muted border border-border text-xs text-foreground mb-4 shrink-0">
                 <div className="flex items-center gap-1">
                   <span className="w-1.5 h-1.5 bg-foreground rounded-full animate-ping mr-1" />
                   正在查看：<strong>{getActiveFilterText()}</strong>
@@ -335,8 +397,14 @@ export default function App() {
                 <p className="text-xs">正在连接本地 IndexedDB...</p>
               </div>
             ) : (
-              /* Kanban Column Grid */
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 items-start">
+              /* Kanban Column Grid - horizontal scroll */
+              <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
+              <OverlayScrollbarsComponent
+                options={scrollbarOptions}
+                className="flex-1 min-h-0"
+                defer
+              >
+              <div className="flex flex-nowrap gap-5 h-full items-stretch pb-2">
                 <KanbanColumn
                   status="todo"
                   title="待办事项 (To Do)"
@@ -355,6 +423,8 @@ export default function App() {
                   onOpenDetails={setEditingTaskId}
                   onAddTask={handleOpenAddTask}
                 />
+              </div>
+              </OverlayScrollbarsComponent>
               </div>
             )}
           </div>
